@@ -1,14 +1,15 @@
 /**
  * 역할: FIRE 대시보드 메인 화면 — D-Day 카드, 지출 슬라이더, 참기 버튼 표시
  * 핵심 기능: 프로필 로드, 은퇴 개월 수 계산, 슬라이더 피드백, 참기 기록, 헤더 네비게이션
- * 의존: lib/types, lib/constants, lib/calculator, lib/storage
+ * 의존: lib/types, lib/constants, lib/calculator, lib/storage, next-auth
  */
 
 "use client";
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Wallet, Rocket, AlertTriangle, Settings, Zap, X } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { Wallet, Rocket, AlertTriangle, Settings, Zap, X, LogOut } from "lucide-react";
 import type { UserProfile, ResistRecord } from "@/lib/types";
 import { SLIDER_MIN, SLIDER_MAX, SLIDER_STEP, RESIST_CATEGORIES } from "@/lib/constants";
 import { calcMonthsFromProfile, getSliderFeedback, formatProjectedDate, calcMonthlySaving } from "@/lib/calculator";
@@ -106,6 +107,7 @@ function ResistForm({
 // ──────────────────────────────────────────────
 export default function DashboardPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   // 프로필 로드 상태
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -125,14 +127,22 @@ export default function DashboardPage() {
   // 참기 누적 통계
   const [resistStats, setResistStats] = useState({ totalAmount: 0, totalDays: 0, count: 0 });
 
+  // 미인증 시 로그인 페이지로 리다이렉트
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/");
+    }
+  }, [status, router]);
+
   // 마운트 시 온보딩 완료 여부 확인 후 프로필 로드
   useEffect(() => {
+    if (status !== "authenticated") return;
     if (!isSetupDone()) {
       router.replace("/dashboard/setup");
       return;
     }
     setProfile(loadProfile());
-  }, [router]);
+  }, [status, router]);
 
   // 마운트 시 참기 통계 로드
   useEffect(() => {
@@ -206,7 +216,14 @@ export default function DashboardPage() {
     <div className="flex min-h-screen flex-col bg-background font-sans text-foreground transition-colors duration-300">
       {/* 상단 헤더 — 타이틀 + 스트레스 테스트/설정 네비게이션 버튼 */}
       <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm dark:border-zinc-800 dark:bg-card">
-        <h1 className="text-lg font-extrabold tracking-tight">Bye-Company Vibe</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-extrabold tracking-tight">Bye-Company Vibe</h1>
+          {session?.user?.name && (
+            <span className="text-[12px] text-subtext font-medium hidden sm:inline">
+              {session.user.name}님
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           {/* 스트레스 테스트 페이지로 이동 */}
           <button
@@ -223,6 +240,14 @@ export default function DashboardPage() {
             aria-label="설정"
           >
             <Settings size={20} />
+          </button>
+          {/* 로그아웃 */}
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+            aria-label="로그아웃"
+          >
+            <LogOut size={20} />
           </button>
         </div>
       </header>

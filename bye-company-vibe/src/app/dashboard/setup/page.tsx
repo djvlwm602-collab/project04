@@ -1,13 +1,14 @@
 /**
  * 역할: 최초 진입 시 재무 프로필 입력 온보딩 페이지 (설정 변경 시에도 재사용)
  * 핵심 기능: 5개 재무 입력 필드, 실시간 월 저축 미리보기, 프로필 저장 후 대시보드 이동
- * 의존: storage.ts, types.ts, constants.ts
+ * 의존: storage.ts, types.ts, constants.ts, next-auth
  */
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Coins, TrendingUp, Wallet, PiggyBank, Target } from "lucide-react";
 import type { UserProfile } from "@/lib/types";
 import { saveProfile, markSetupDone, loadProfile } from "@/lib/storage";
@@ -85,10 +86,26 @@ function formatInputValue(profile: UserProfile, key: keyof UserProfile, isPercen
 
 export default function SetupPage() {
   const router = useRouter();
+  const { status } = useSession();
+
+  // 미인증 시 로그인 페이지로 리다이렉트
+  useEffect(() => {
+    if (status === "unauthenticated") router.replace("/");
+  }, [status, router]);
+
   // 재진입 시 기존 프로필을 불러오고, 최초 방문 시 DEFAULT_PROFILE 반환
   const [profile, setProfile] = useState<UserProfile>(() => loadProfile());
 
   const monthlySaving = profile.monthlyIncome - profile.monthlyExpense;
+
+  // 세션 로딩 중 스피너 표시
+  if (status === "loading") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-kakao-yellow border-t-transparent" />
+      </div>
+    );
+  }
 
   // 입력값 변경 처리 — 표시 단위(만원/%)를 내부 단위(원/소수)로 역변환
   const handleChange = (key: keyof UserProfile, isPercent: boolean, value: string) => {

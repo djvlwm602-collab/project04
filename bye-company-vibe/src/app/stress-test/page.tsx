@@ -1,7 +1,7 @@
 /**
  * 역할: 스트레스/보너스 시나리오 토글 후 은퇴일 변화를 실시간으로 확인하는 시뮬레이터 페이지
  * 핵심 기능: 시나리오 다중 선택, 기본 vs 시나리오 적용 은퇴 개월 수 비교, 애니메이션 입장
- * 의존: lib/types, lib/constants, lib/calculator, lib/storage
+ * 의존: lib/types, lib/constants, lib/calculator, lib/storage, next-auth
  */
 
 "use client";
@@ -9,6 +9,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { ArrowLeft, ShieldAlert } from "lucide-react";
 import type { UserProfile } from "@/lib/types";
 import { STRESS_SCENARIOS } from "@/lib/constants";
@@ -17,6 +18,7 @@ import { loadProfile, isSetupDone } from "@/lib/storage";
 
 export default function StressTestPage() {
   const router = useRouter();
+  const { status } = useSession();
 
   // 프로필 로드 상태 (null = 로딩 중)
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -24,14 +26,20 @@ export default function StressTestPage() {
   // 활성화된 시나리오 ID 집합 (다중 선택 지원)
   const [activeIds, setActiveIds] = useState<Set<string>>(new Set());
 
+  // 미인증 시 로그인 페이지로 리다이렉트
+  useEffect(() => {
+    if (status === "unauthenticated") router.replace("/");
+  }, [status, router]);
+
   // 마운트 시 온보딩 완료 여부 확인 후 프로필 로드
   useEffect(() => {
+    if (status !== "authenticated") return;
     if (!isSetupDone()) {
       router.replace("/dashboard/setup");
       return;
     }
     setProfile(loadProfile());
-  }, [router]);
+  }, [status, router]);
 
   // 기본 은퇴 개월 수 (시나리오 미적용)
   const baseMonths = useMemo(() => {
