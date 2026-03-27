@@ -1,15 +1,20 @@
+/**
+ * 역할: 서비스 진입점 — 소셜 로그인 화면
+ * 핵심 기능: 카카오/구글 로그인 버튼, 온보딩 완료 여부 분기
+ * 의존: lib/storage (isSetupDone)
+ */
 "use client";
 
 import { motion } from "framer-motion";
-import { LogIn, TrendingUp, CalendarDays } from "lucide-react";
+import { TrendingUp, CalendarDays } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { isSetupDone } from "@/lib/storage";
 
 export default function LoginPage() {
   const router = useRouter();
 
   const handleLogin = () => {
-    // 실제 로그인 로직이 들어갈 부분, 임시로 대시보드로 이동
-    router.push("/dashboard");
+    router.push(isSetupDone() ? "/dashboard" : "/dashboard/setup");
   };
 
   return (
