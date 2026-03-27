@@ -73,3 +73,11 @@ export function getResistStats(): { totalAmount: number; totalDays: number; coun
     count: records.length,
   };
 }
+
+// 로그아웃 시 사용자 데이터 정리 — 세션과 로컬 데이터 동시 제거
+export function clearUserData(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(PROFILE_KEY);
+  localStorage.removeItem(RESIST_KEY);
+  localStorage.removeItem(SETUP_DONE_KEY);
+}

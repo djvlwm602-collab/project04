@@ -13,7 +13,7 @@ import { Wallet, Rocket, AlertTriangle, Settings, Zap, X, LogOut } from "lucide-
 import type { UserProfile, ResistRecord } from "@/lib/types";
 import { SLIDER_MIN, SLIDER_MAX, SLIDER_STEP, RESIST_CATEGORIES } from "@/lib/constants";
 import { calcMonthsFromProfile, getSliderFeedback, formatProjectedDate, calcMonthlySaving } from "@/lib/calculator";
-import { saveResistRecord, getResistStats, loadProfile, isSetupDone } from "@/lib/storage";
+import { saveResistRecord, getResistStats, loadProfile, isSetupDone, clearUserData } from "@/lib/storage";
 
 // ──────────────────────────────────────────────
 // 참기 입력 폼 컴포넌트
@@ -241,9 +241,12 @@ export default function DashboardPage() {
           >
             <Settings size={20} />
           </button>
-          {/* 로그아웃 */}
+          {/* 로그아웃 — 세션 + 로컬 데이터 동시 정리 */}
           <button
-            onClick={() => signOut({ callbackUrl: "/" })}
+            onClick={() => {
+              clearUserData();
+              signOut({ callbackUrl: "/" });
+            }}
             className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
             aria-label="로그아웃"
           >
