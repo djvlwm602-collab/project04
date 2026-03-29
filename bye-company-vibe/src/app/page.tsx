@@ -19,21 +19,14 @@ export default function LoginPage() {
   const { data: session, status } = useSession();
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
-  // 이미 로그인된 상태면 대시보드로 리다이렉트
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.replace(isSetupDone() ? "/dashboard" : "/dashboard/setup");
-    }
-  }, [status, router]);
-
   const handleLogin = (provider: "kakao" | "google") => {
     setLoadingProvider(provider);
     const callbackUrl = isSetupDone() ? "/dashboard" : "/dashboard/setup";
     signIn(provider, { callbackUrl });
   };
 
-  // 세션 로딩 중이거나 이미 로그인된 상태면 로딩 표시
-  if (status === "loading" || status === "authenticated") {
+  // 세션 로딩 중 로딩 표시
+  if (status === "loading") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-kakao-yellow border-t-transparent" />

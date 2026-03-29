@@ -6,32 +6,7 @@
 
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-
-// 카카오 프로바이더 — next-auth v5에 내장되지 않으므로 커스텀 정의
-const Kakao = {
-  id: "kakao",
-  name: "Kakao",
-  type: "oauth" as const,
-  authorization: {
-    url: "https://kauth.kakao.com/oauth/authorize",
-    params: { scope: "profile_nickname profile_image account_email" },
-  },
-  token: "https://kauth.kakao.com/oauth/token",
-  userinfo: "https://kapi.kakao.com/v2/user/me",
-  clientId: process.env.KAKAO_CLIENT_ID,
-  clientSecret: process.env.KAKAO_CLIENT_SECRET,
-  // 카카오 API 응답 구조에 맞게 프로필 매핑
-  profile(profile: Record<string, unknown>) {
-    const kakaoAccount = profile.kakao_account as Record<string, unknown> | undefined;
-    const kakaoProfile = kakaoAccount?.profile as Record<string, string> | undefined;
-    return {
-      id: String(profile.id),
-      name: kakaoProfile?.nickname ?? "카카오 사용자",
-      email: (kakaoAccount?.email as string) ?? null,
-      image: kakaoProfile?.profile_image_url ?? null,
-    };
-  },
-};
+import Kakao from "next-auth/providers/kakao";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -39,7 +14,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-    Kakao,
+    Kakao({
+      clientId: process.env.KAKAO_CLIENT_ID,
+      clientSecret: process.env.KAKAO_CLIENT_SECRET,
+    }),
   ],
   pages: {
     // 커스텀 로그인 페이지 사용 (기본 NextAuth UI 대신)
