@@ -1,31 +1,40 @@
 /**
- * 역할: 서비스 진입점 — 소셜 로그인 화면
- * 핵심 기능: 카카오/구글 OAuth 로그인, 로그인 상태면 대시보드로 리다이렉트
- * 의존: next-auth (signIn), lib/storage (isSetupDone)
+ * 역할: 회원가입 진입 페이지 — 카카오/구글 간편 가입 버튼
+ * 핵심 기능: 소셜 OAuth 인증 시작, 인증 후 닉네임 설정(/signup/profile)으로 이동
+ * 의존: next-auth (signIn, useSession), lib/storage
  */
 "use client";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { TrendingUp, CalendarDays, Loader2 } from "lucide-react";
+import { CalendarDays, TrendingUp, Loader2 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { isSetupDone } from "@/lib/storage";
+import { isSignupDone, isSetupDone } from "@/lib/storage";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
-  const handleLogin = (provider: "kakao" | "google") => {
+  // TODO: 회원가입 플로우 확인 후 다시 활성화할 것
+  // useEffect(() => {
+  //   if (status === "authenticated") {
+  //     if (isSetupDone()) router.replace("/dashboard");
+  //     else if (isSignupDone()) router.replace("/dashboard/setup");
+  //     else router.replace("/signup/profile");
+  //   }
+  // }, [status, router]);
+
+  const handleSignup = (provider: "kakao" | "google") => {
     setLoadingProvider(provider);
-    const callbackUrl = isSetupDone() ? "/dashboard" : "/dashboard/setup";
-    signIn(provider, { callbackUrl });
+    // OAuth 인증 후 닉네임 설정 페이지로 이동
+    signIn(provider, { callbackUrl: "/signup/profile" });
   };
 
-  // 세션 로딩 중 로딩 표시
+  // 세션 로딩 중 스피너
   if (status === "loading") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -42,6 +51,7 @@ export default function LoginPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="flex w-full max-w-md flex-col items-center gap-8 rounded-3xl bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
       >
+        {/* 로고 + 타이틀 */}
         <div className="flex flex-col items-center gap-4 text-center mt-4">
           <motion.div
             initial={{ scale: 0.5, rotate: -10 }}
@@ -55,47 +65,44 @@ export default function LoginPage() {
 
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-              Bye-Company Vibe
+              회원가입
             </h1>
             <p className="text-subtext mt-3 text-sm font-medium leading-relaxed">
-              40대 맞벌이 부부를 위한<br/>파이어족 은퇴 D-Day 시뮬레이터
+              소셜 계정으로 간편하게 시작하세요<br/>별도 비밀번호가 필요 없습니다
             </p>
           </div>
         </div>
 
-        <div className="flex w-full flex-col gap-3 mt-6">
+        {/* 소셜 가입 버튼 */}
+        <div className="flex w-full flex-col gap-3 mt-2">
           <button
-            onClick={() => handleLogin("kakao")}
+            onClick={() => handleSignup("kakao")}
             disabled={loadingProvider !== null}
             className="group flex w-full items-center justify-center gap-2 rounded-[18px] bg-kakao-yellow py-4 text-[16px] font-bold text-kakao-brown transition-all hover:scale-[1.02] active:scale-95 shadow-sm disabled:opacity-60 disabled:hover:scale-100"
           >
             {loadingProvider === "kakao" ? (
               <Loader2 size={20} className="animate-spin" />
             ) : null}
-            카카오로 시작하기
+            카카오로 가입하기
           </button>
 
           <button
-            onClick={() => handleLogin("google")}
+            onClick={() => handleSignup("google")}
             disabled={loadingProvider !== null}
             className="group flex w-full items-center justify-center gap-2 rounded-[18px] bg-white py-4 text-[16px] font-bold text-gray-700 border border-gray-200 transition-all hover:scale-[1.02] active:scale-95 shadow-sm dark:bg-[#2A2A2A] dark:text-zinc-200 dark:border-zinc-700 disabled:opacity-60 disabled:hover:scale-100"
           >
             {loadingProvider === "google" ? (
               <Loader2 size={20} className="animate-spin" />
             ) : null}
-            Google로 시작하기
+            Google로 가입하기
           </button>
         </div>
 
-        <p className="mt-2 mb-1 text-[13px] text-subtext text-center font-medium">
-          아직 계정이 없으신가요?{" "}
-          <Link href="/signup" className="text-kakao-brown font-bold underline underline-offset-2 hover:opacity-80 transition-opacity">
-            회원가입
+        <p className="mt-2 mb-2 text-[13px] text-subtext text-center font-medium">
+          이미 계정이 있으신가요?{" "}
+          <Link href="/" className="text-kakao-brown font-bold underline underline-offset-2 hover:opacity-80 transition-opacity">
+            로그인
           </Link>
-        </p>
-
-        <p className="mt-1 mb-2 text-[12px] text-subtext text-center font-medium">
-          로그인 시 서비스 이용약관 및<br/>개인정보 처리방침에 동의하게 됩니다.
         </p>
       </motion.div>
     </div>

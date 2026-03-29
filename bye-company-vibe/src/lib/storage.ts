@@ -4,12 +4,14 @@
  * 의존: types.ts, constants.ts
  */
 
-import type { UserProfile, ResistRecord } from "./types";
+import type { UserProfile, ResistRecord, UserNickname } from "./types";
 import { DEFAULT_PROFILE } from "./constants";
 
 const PROFILE_KEY = "bye-company-profile";
 const RESIST_KEY = "bye-company-resist-records";
 const SETUP_DONE_KEY = "bye-company-setup-done";
+const NICKNAME_KEY = "bye-company-nickname";
+const SIGNUP_DONE_KEY = "bye-company-signup-done";
 
 // --- UserProfile ---
 
@@ -74,10 +76,42 @@ export function getResistStats(): { totalAmount: number; totalDays: number; coun
   };
 }
 
+// --- 닉네임/프로필 ---
+
+export function loadNickname(): UserNickname | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(NICKNAME_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+export function saveNickname(data: UserNickname): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(NICKNAME_KEY, JSON.stringify(data));
+}
+
+// --- 회원가입 완료 여부 (닉네임 설정까지 마친 상태) ---
+
+export function isSignupDone(): boolean {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(SIGNUP_DONE_KEY) === "true";
+}
+
+export function markSignupDone(): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(SIGNUP_DONE_KEY, "true");
+}
+
 // 로그아웃 시 사용자 데이터 정리 — 세션과 로컬 데이터 동시 제거
 export function clearUserData(): void {
   if (typeof window === "undefined") return;
   localStorage.removeItem(PROFILE_KEY);
   localStorage.removeItem(RESIST_KEY);
   localStorage.removeItem(SETUP_DONE_KEY);
+  localStorage.removeItem(NICKNAME_KEY);
+  localStorage.removeItem(SIGNUP_DONE_KEY);
 }

@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Coins, TrendingUp, Wallet, PiggyBank, Target } from "lucide-react";
 import type { UserProfile } from "@/lib/types";
-import { saveProfile, markSetupDone, loadProfile } from "@/lib/storage";
+import { saveProfile, markSetupDone, loadProfile, isSetupDone } from "@/lib/storage";
 
 // 필드 설정: 아이콘, 라벨, 설명, 단위, 스텝을 한 곳에서 관리
 const FIELD_CONFIG = [
@@ -119,12 +119,15 @@ export default function SetupPage() {
     setProfile((prev) => ({ ...prev, [key]: internalValue }));
   };
 
-  // 제출: 프로필 저장 + 온보딩 완료 표시 + 대시보드 이동
+  // 최초 가입 플로우인지 여부 — 이미 setup을 마친 적 있으면 설정 변경 모드
+  const isFirstSetup = !isSetupDone();
+
+  // 제출: 프로필 저장 + 온보딩 완료 표시 + 최초 가입이면 환영 페이지, 아니면 대시보드
   const handleSubmit = () => {
     if (monthlySaving <= 0) return;
     saveProfile(profile);
     markSetupDone();
-    router.push("/dashboard");
+    router.push(isFirstSetup ? "/signup/welcome" : "/dashboard");
   };
 
   return (
@@ -223,7 +226,7 @@ export default function SetupPage() {
             disabled={monthlySaving <= 0}
             className="w-full rounded-[18px] bg-kakao-yellow py-4 text-[16px] font-bold text-kakao-brown transition-all hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            은퇴 D-Day 계산 시작하기
+            {isFirstSetup ? "다음: 가입 완료" : "설정 저장하기"}
           </button>
         </motion.div>
       </motion.div>

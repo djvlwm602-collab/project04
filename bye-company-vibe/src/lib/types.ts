@@ -26,6 +26,11 @@ export interface FeedbackItem {
   messages: string[];      // 랜덤 선택할 문구 배열 ({months}는 실제 개월 수로 치환)
 }
 
+export interface UserNickname {
+  nickname: string;            // 서비스 내 닉네임
+  profileImage?: string;       // 프로필 이미지 URL
+}
+
 export interface StressScenario {
   id: string;
   name: string;
