@@ -399,7 +399,7 @@ function ShareCardModal({
               {/* 상단: 앱 이름 */}
               <div className="flex items-center gap-2 self-start">
                 <Rocket size={16} className="opacity-80" />
-                <span className="text-[13px] font-bold opacity-80">Bye-Company Vibe</span>
+                <span className="text-[13px] font-bold opacity-80">아임 파이어족</span>
               </div>
 
               {/* 중앙: D-Day 메인 */}
@@ -576,7 +576,7 @@ export default function DashboardPage() {
       {/* 상단 헤더 */}
       <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm dark:border-zinc-800 dark:bg-card">
         <div className="flex items-center gap-2">
-          <h1 className="text-lg font-extrabold tracking-tight">Bye-Company Vibe</h1>
+          <h1 className="text-lg font-extrabold tracking-tight">아임 파이어족</h1>
           {session?.user?.name && (
             <span className="text-[12px] text-subtext font-medium hidden sm:inline">
               {session.user.name}님

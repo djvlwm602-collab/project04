@@ -9,8 +9,12 @@ import "./globals.css";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
-  title: "Bye-Company Vibe",
+  title: "아임 파이어족",
   description: "40대 맞벌이 딩크족을 위한 파이어족 은퇴 D-Day 시뮬레이터",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({

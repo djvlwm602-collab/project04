@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { CalendarDays, TrendingUp, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -44,12 +44,12 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-background transition-colors duration-300">
+    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-white">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="flex w-full max-w-md flex-col items-center gap-8 rounded-3xl bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
+        className="flex w-full max-w-md flex-col items-center gap-8"
       >
         {/* 로고 + 타이틀 */}
         <div className="flex flex-col items-center gap-4 text-center mt-4">
@@ -57,10 +57,13 @@ export default function SignupPage() {
             initial={{ scale: 0.5, rotate: -10 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.2 }}
-            className="flex h-20 w-20 items-center justify-center rounded-2xl bg-kakao-yellow text-kakao-brown shadow-lg mb-2 relative overflow-hidden"
+            className="h-20 w-20 rounded-2xl shadow-lg mb-2 relative overflow-hidden"
           >
-            <TrendingUp size={40} className="absolute opacity-20 right-[-5px] bottom-[-5px]" />
-            <CalendarDays size={36} />
+            <img
+              src="/fire.png"
+              alt="아임 파이어족"
+              className="h-full w-full object-cover"
+            />
           </motion.div>
 
           <div>
