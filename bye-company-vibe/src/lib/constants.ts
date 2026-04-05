@@ -9,10 +9,11 @@ import type { UserProfile, FeedbackItem, StressScenario } from "./types";
 // 통계청 2024 기준 40대 맞벌이 딩크 가구 기본값
 export const DEFAULT_PROFILE: UserProfile = {
   currentAssets: 400000000,
+  loanAmount: 100000000,
+  targetAssets: 1500000000,
   monthlyIncome: 8000000,
   monthlyExpense: 3500000,
   investReturnRate: 0.06,
-  targetExpense: 3500000,
 };
 
 export const FIRE_MULTIPLIER = 25;
@@ -124,10 +125,10 @@ export const STRESS_SCENARIOS: StressScenario[] = [
   },
   {
     id: "target-up",
-    name: "목표 생활비 상향",
+    name: "은퇴 목표 자산 상향",
     emoji: "💎",
-    description: "은퇴 후 더 여유로운 생활 (350만 → 450만)",
-    apply: (p) => ({ ...p, targetExpense: p.targetExpense + 1000000 }),
+    description: "은퇴 후 더 여유로운 생활 (목표 +5억)",
+    apply: (p) => ({ ...p, targetAssets: p.targetAssets + 500000000 }),
   },
   {
     id: "bonus",

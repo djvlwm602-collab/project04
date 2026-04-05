@@ -6,15 +6,9 @@
 
 import type { UserProfile } from "./types";
 import {
-  FIRE_MULTIPLIER,
   SAVING_FEEDBACKS,
   SPENDING_FEEDBACKS,
 } from "./constants";
-
-// 목표 자금 계산: 은퇴 후 월 생활비 × 12 × 25(4% 룰)
-export function calcTargetAmount(targetExpense: number): number {
-  return targetExpense * 12 * FIRE_MULTIPLIER;
-}
 
 // 월 저축액 계산
 export function calcMonthlySaving(profile: UserProfile): number {
@@ -48,10 +42,11 @@ export function calcMonthsFromProfile(
   profile: UserProfile,
   extraSaving: number = 0
 ): number {
-  const target = calcTargetAmount(profile.targetExpense);
+  const target = profile.targetAssets;
   const saving = calcMonthlySaving(profile) + extraSaving;
+  const netAssets = profile.currentAssets - profile.loanAmount;
   return calculateMonthsToFIRE(
-    profile.currentAssets,
+    netAssets,
     saving,
     target,
     profile.investReturnRate

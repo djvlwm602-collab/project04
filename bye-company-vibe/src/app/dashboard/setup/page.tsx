@@ -16,28 +16,9 @@ import {
 import type { UserProfile } from "@/lib/types";
 import { saveProfile, markSetupDone, loadProfile, isSetupDone } from "@/lib/storage";
 import { calcMonthsFromProfile, formatProjectedDate } from "@/lib/calculator";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
-// --- 모티베이션 슬라이드 (Step 0) ---
-const MOTIVATION_SLIDES = [
-  {
-    Icon: CalendarDays,
-    title: "나의 자유까지 남은 시간",
-    description: "입력한 재무 정보로\n은퇴 D-Day를 실시간 계산해 드려요",
-    color: "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
-  },
-  {
-    Icon: Sparkles,
-    title: "퇴직금 시뮬레이션",
-    description: "지출을 줄이면 은퇴가 얼마나 빨라지는지\n스와이프 한 번으로 확인하세요",
-    color: "bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400",
-  },
-  {
-    Icon: Rocket,
-    title: "스트레스 테스트",
-    description: "소득 감소, 지출 증가 등\n다양한 시나리오를 미리 대비하세요",
-    color: "bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400",
-  },
-];
+
 
 // --- 입력 필드 설정 (한 필드 = 한 페이지) ---
 
@@ -76,6 +57,37 @@ const ALL_FIELDS: FieldConfig[] = [
     ],
   },
   {
+    key: "loanAmount",
+    label: "보유 대출금",
+    subtitle: "현재 남은 대출 원금 합계를 입력하세요",
+    description: "주택 자금, 신용 대출 등 총 대출액",
+    Icon: Wallet,
+    unit: "만원",
+    step: 500,
+    isPercent: false,
+    presets: [
+      { label: "없음", value: 0 },
+      { label: "5,000만", value: 50000000 },
+      { label: "1억", value: 100000000 },
+      { label: "2억", value: 200000000 },
+    ],
+  },
+  {
+    key: "targetAssets",
+    label: "은퇴 목표 자산",
+    subtitle: "은퇴 시점까지 모으고 싶은 순자산 목표",
+    description: "파이어족 평균 목표는 10억~20억 원입니다",
+    Icon: Target,
+    unit: "만원",
+    step: 1000,
+    isPercent: false,
+    presets: [
+      { label: "5억", value: 500000000 },
+      { label: "10억", value: 1000000000 },
+      { label: "20억", value: 2000000000 },
+    ],
+  },
+  {
     key: "monthlyIncome",
     label: "월 합산 소득",
     subtitle: "부부 합산 세후 월급을 입력하세요",
@@ -88,7 +100,6 @@ const ALL_FIELDS: FieldConfig[] = [
       { label: "400만", value: 4000000 },
       { label: "600만", value: 6000000 },
       { label: "800만", value: 8000000 },
-      { label: "1,000만", value: 10000000 },
     ],
   },
   {
@@ -97,22 +108,6 @@ const ALL_FIELDS: FieldConfig[] = [
     subtitle: "매달 나가는 생활비를 입력하세요",
     description: "고정비 + 변동비 합계 (저축 제외)",
     Icon: PiggyBank,
-    unit: "만원",
-    step: 50,
-    isPercent: false,
-    presets: [
-      { label: "200만", value: 2000000 },
-      { label: "350만", value: 3500000 },
-      { label: "500만", value: 5000000 },
-      { label: "700만", value: 7000000 },
-    ],
-  },
-  {
-    key: "targetExpense",
-    label: "은퇴 후 월 생활비",
-    subtitle: "은퇴 후 목표 생활비를 설정하세요",
-    description: "은퇴 후 매달 필요한 예상 생활비",
-    Icon: Target,
     unit: "만원",
     step: 50,
     isPercent: false,
@@ -173,13 +168,12 @@ export default function SetupPage() {
     if (status === "unauthenticated") router.replace("/");
   }, [status, router]);
 
-  const isFirstSetup = !isSetupDone();
-
-  // 설정 변경 모드에서는 모티베이션 스킵하고 첫 필드부터 시작
-  const [step, setStep] = useState(isFirstSetup ? 0 : FIRST_FIELD_STEP);
+  // 모티베이션 창 없이 바로 첫 필드부터 시작
+  const [step, setStep] = useState(FIRST_FIELD_STEP);
   // 슬라이드 방향 추적 (뒤로 갈 때 애니메이션 반전)
   const [direction, setDirection] = useState(1);
   const [profile, setProfile] = useState<UserProfile>(() => loadProfile());
+  const [isCalculating, setIsCalculating] = useState(false);
 
   const monthlySaving = profile.monthlyIncome - profile.monthlyExpense;
   const projectedMonths = calcMonthsFromProfile(profile);
@@ -216,8 +210,23 @@ export default function SetupPage() {
     if (monthlySaving <= 0) return;
     saveProfile(profile);
     markSetupDone();
-    router.push("/dashboard");
+    setIsCalculating(true);
+    setTimeout(() => {
+      router.push("/dashboard");
+    }, 3000);
   };
+
+  if (isCalculating) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-background">
+        <div className="mb-8 h-16 w-16 animate-spin rounded-full border-4 border-gray-200 dark:border-zinc-800 border-t-kakao-yellow dark:border-t-kakao-yellow" />
+        <h2 className="text-2xl font-extrabold text-foreground">은퇴날짜를 계산중입니다 ⏳</h2>
+        <p className="mt-3 text-[15px] font-medium text-subtext text-center leading-relaxed">
+          입력하신 데이터를 바탕으로<br />자유의 날을 확실하게 찾고 있어요 🚀
+        </p>
+      </div>
+    );
+  }
 
   // 다음 단계
   const handleNext = () => {
@@ -231,7 +240,7 @@ export default function SetupPage() {
 
   // 이전 단계
   const handleBack = () => {
-    const minStep = isFirstSetup ? 0 : FIRST_FIELD_STEP;
+    const minStep = FIRST_FIELD_STEP;
     if (step > minStep) {
       setDirection(-1);
       setStep(step - 1);
@@ -242,16 +251,15 @@ export default function SetupPage() {
   const expenseFieldStep = FIRST_FIELD_STEP + ALL_FIELDS.findIndex(f => f.key === "monthlyExpense");
   const canProceed = step === expenseFieldStep ? monthlySaving > 0 : true;
 
-  // 프로그레스 계산 (모티베이션은 0%, 마지막 필드는 100%)
-  const minStep = isFirstSetup ? 0 : FIRST_FIELD_STEP;
+  // 프로그레스 계산 (마지막 필드는 100%)
+  const minStep = FIRST_FIELD_STEP;
   const maxStep = LAST_FIELD_STEP;
-  const progress = ((step - minStep) / (maxStep - minStep)) * 100;
+  const progress = ((step - minStep) / Math.max(1, maxStep - minStep)) * 100;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-background">
-      <div className="w-full max-w-md">
-        {/* 프로그레스 바 */}
-        <div className="mb-8">
+    <div className="relative flex min-h-screen flex-col items-center justify-center p-6 bg-background">
+      <div className="absolute top-0 left-0 w-full z-20 px-6 pt-8 pb-4 bg-background/80 backdrop-blur-md sm:px-12 sm:pt-10">
+        <div className="mx-auto w-full max-w-md relative">
           <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-zinc-700 overflow-hidden">
             <motion.div
               className="h-full rounded-full bg-kakao-yellow"
@@ -260,68 +268,19 @@ export default function SetupPage() {
               transition={{ duration: 0.4, ease: "easeOut" }}
             />
           </div>
-          {/* 현재 단계 표시 */}
-          {step >= FIRST_FIELD_STEP && (
-            <p className="mt-2 text-xs text-subtext text-right">
-              {fieldIndex + 1} / {ALL_FIELDS.length}
-            </p>
-          )}
+          <p className="mt-2 text-xs font-medium text-subtext text-right">
+            {fieldIndex + 1} / {ALL_FIELDS.length}
+          </p>
         </div>
+      </div>
 
+      {/* 테마 토글 위치를 프로그레스 바 영역 안으로 올리거나 우측 상단 고정 유지를 위해 z-index 높임 */}
+      <div className="absolute top-6 right-6 z-30">
+        <ThemeToggle />
+      </div>
+
+      <div className="w-full max-w-md pt-16 mt-4">
         <AnimatePresence mode="wait" custom={direction}>
-          {/* ===== Step 0: 모티베이션 ===== */}
-          {step === 0 && (
-            <motion.div
-              key="motivation"
-              custom={direction}
-              initial={{ opacity: 0, x: 60 * direction }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -60 * direction }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="flex flex-col items-center gap-6"
-            >
-              <div className="text-center">
-                <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
-                  간단한 입력만으로
-                </h1>
-                <p className="mt-2 text-lg font-bold text-kakao-brown">
-                  나만의 은퇴 시뮬레이터가 완성됩니다
-                </p>
-              </div>
-
-              <div className="flex w-full flex-col gap-3">
-                {MOTIVATION_SLIDES.map(({ Icon, title, description, color }, idx) => (
-                  <motion.div
-                    key={title}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.15 + idx * 0.12 }}
-                    className={`flex items-start gap-4 rounded-2xl p-5 ${color}`}
-                  >
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/60 dark:bg-black/10">
-                      <Icon size={22} />
-                    </div>
-                    <div>
-                      <p className="text-[15px] font-extrabold">{title}</p>
-                      <p className="mt-1 text-[13px] font-medium leading-relaxed whitespace-pre-line opacity-75">
-                        {description}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              <p className="text-xs text-subtext">약 30초면 충분해요</p>
-
-              <button
-                onClick={handleNext}
-                className="flex w-full items-center justify-center gap-2 rounded-[18px] bg-kakao-yellow py-4 text-[16px] font-bold text-kakao-brown transition-all hover:scale-[1.02] active:scale-95 shadow-sm"
-              >
-                시작하기
-                <ArrowRight size={18} />
-              </button>
-            </motion.div>
-          )}
 
           {/* ===== Step 1~5: 필드 한 개씩 ===== */}
           {currentField && (
@@ -417,21 +376,6 @@ export default function SetupPage() {
                 </motion.div>
               )}
 
-              {/* 마지막 필드: 실시간 D-Day 미리보기 */}
-              {isLastField && monthlySaving > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.25, duration: 0.35 }}
-                  className="rounded-2xl bg-kakao-yellow/15 border border-kakao-yellow/30 px-5 py-5 text-center"
-                >
-                  <p className="text-xs font-bold text-kakao-brown/70 mb-1">예상 은퇴 시점</p>
-                  <p className="text-2xl font-extrabold text-kakao-brown">{projectedDate}</p>
-                  <p className="text-sm font-bold text-kakao-brown/80 mt-1">
-                    지금부터 약 <span className="text-kakao-brown">{projectedMonths}개월</span> 남았습니다
-                  </p>
-                </motion.div>
-              )}
 
               {/* 하단 버튼 */}
               <div className="flex gap-3">
@@ -449,7 +393,7 @@ export default function SetupPage() {
                   className="flex flex-1 items-center justify-center gap-2 rounded-[18px] bg-kakao-yellow py-4 text-[16px] font-bold text-kakao-brown transition-all hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
                 >
                   {isLastField ? (
-                    isFirstSetup ? "다음: 가입 완료" : "설정 저장하기"
+                    "설정 저장하기"
                   ) : (
                     <>
                       다음

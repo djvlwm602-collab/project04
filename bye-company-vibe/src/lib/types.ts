@@ -5,11 +5,12 @@
  */
 
 export interface UserProfile {
-  currentAssets: number;      // 현재 자산 (원)
-  monthlyIncome: number;      // 월 소득 (원)
+  currentAssets: number;      // 현재 총 자산 (원)
+  loanAmount: number;         // 보유 대출금 (원)
+  targetAssets: number;       // 은퇴 목표 자산 (원)
+  monthlyIncome: number;      // 월 합산 소득 (원)
   monthlyExpense: number;     // 월 생활비 (원)
   investReturnRate: number;   // 연 투자 수익률 (0.06 = 6%)
-  targetExpense: number;      // 은퇴 후 월 생활비 (원)
 }
 
 export interface ResistRecord {

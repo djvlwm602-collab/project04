@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { isSignupDone, isSetupDone } from "@/lib/storage";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -44,7 +45,10 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-white">
+    <div className="relative flex min-h-screen flex-col items-center justify-center p-6 bg-background">
+      <div className="absolute top-6 right-6 z-10">
+        <ThemeToggle />
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -103,7 +107,7 @@ export default function SignupPage() {
 
         <p className="mt-2 mb-2 text-[13px] text-subtext text-center font-medium">
           이미 계정이 있으신가요?{" "}
-          <Link href="/" className="text-kakao-brown font-bold underline underline-offset-2 hover:opacity-80 transition-opacity">
+          <Link href="/" className="text-kakao-brown dark:text-kakao-yellow font-bold underline underline-offset-2 hover:opacity-80 transition-opacity">
             로그인
           </Link>
         </p>

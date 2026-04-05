@@ -11,12 +11,13 @@ import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
   Wallet, Rocket, AlertTriangle, Settings, Zap, X, LogOut,
-  Share2, Download, ChevronRight,
+  Share2, Download, ChevronRight, Check,
 } from "lucide-react";
 import type { UserProfile, ResistRecord } from "@/lib/types";
 import { SLIDER_MIN, SLIDER_MAX, SLIDER_STEP, RESIST_CATEGORIES } from "@/lib/constants";
-import { calcMonthsFromProfile, getSliderFeedback, formatProjectedDate, calcMonthlySaving, calcTargetAmount } from "@/lib/calculator";
-import { saveResistRecord, getResistStats, loadProfile, isSetupDone, clearUserData } from "@/lib/storage";
+import { calcMonthsFromProfile, getSliderFeedback, formatProjectedDate, calcMonthlySaving } from "@/lib/calculator";
+import { saveResistRecord, getResistStats, loadProfile, isSetupDone, clearUserData, saveProfile } from "@/lib/storage";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 // ──────────────────────────────────────────────
 // 실시간 카운트다운 훅 — 초 단위로 남은 시간 계산
@@ -357,7 +358,7 @@ function SliderSheet({
           step={SLIDER_STEP}
           value={sliderValue}
           onChange={(e) => setSliderValue(Number(e.target.value))}
-          className="h-2.5 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-kakao-dark dark:bg-zinc-700"
+          className="h-2.5 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-kakao-dark dark:accent-kakao-yellow dark:bg-zinc-700"
         />
         <div className="mt-4 text-center text-[17px] font-extrabold">
           조정 금액: {sliderValue > 0 ? "+" : ""}{(sliderValue / 10000).toLocaleString()}만 원 / 월
@@ -370,7 +371,7 @@ function SliderSheet({
             ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
             : sliderValue < 0
             ? "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300"
-            : "bg-gray-100 text-subtext dark:bg-zinc-800"
+            : "bg-gray-100 text-subtext dark:bg-zinc-800 dark:text-zinc-200"
         }`}
       >
         {feedbackText}
@@ -392,6 +393,153 @@ function SliderSheet({
 }
 
 // ──────────────────────────────────────────────
+// 설정 통합 바텀시트 — 모든 항목을 한 화면에서 수정
+// ──────────────────────────────────────────────
+
+const FIELD_CONFIGS = [
+  { key: "currentAssets" as const, label: "현재 총 자산", unit: "만원", isPercent: false, description: "예적금 + 투자금 + 부동산 순자산 합계" },
+  { key: "loanAmount" as const, label: "보유 대출금", unit: "만원", isPercent: false, description: "주택 자금, 신용 대출 등 총 대출액" },
+  { key: "targetAssets" as const, label: "은퇴 목표 자산", unit: "만원", isPercent: false, description: "대출 상환 후 모으고 싶은 순자산" },
+  { key: "monthlyIncome" as const, label: "월 합산 소득", unit: "만원", isPercent: false, description: "부부 합산 세후 실수령액" },
+  { key: "monthlyExpense" as const, label: "월 생활비", unit: "만원", isPercent: false, description: "고정비 + 변동비 (저축 제외)" },
+  { key: "investReturnRate" as const, label: "연 투자 수익률", unit: "%", isPercent: true, description: "보수적 4~6%, 공격적 8~10%" },
+];
+
+function SettingsSheet({
+  profile,
+  onClose,
+  onSave,
+}: {
+  profile: UserProfile;
+  onClose: () => void;
+  onSave: (updated: UserProfile) => void;
+}) {
+  const [draft, setDraft] = useState<UserProfile>({ ...profile });
+  const [saved, setSaved] = useState(false);
+
+  const monthlySaving = draft.monthlyIncome - draft.monthlyExpense;
+
+  const handleChange = (key: keyof UserProfile, isPercent: boolean, raw: string) => {
+    const parsed = parseFloat(raw);
+    if (isNaN(parsed)) return;
+    const internal = isPercent ? parsed / 100 : parsed * 10000;
+    setDraft((prev) => ({ ...prev, [key]: internal }));
+  };
+
+  const displayValue = (key: keyof UserProfile, isPercent: boolean): string => {
+    const v = draft[key];
+    if (isPercent) {
+      const pct = v * 100;
+      return String(pct % 1 === 0 ? pct : parseFloat(pct.toFixed(1)));
+    }
+    const man = v / 10000;
+    return String(man % 1 === 0 ? man : parseFloat(man.toFixed(1)));
+  };
+
+  const handleSave = () => {
+    saveProfile(draft);
+    onSave(draft);
+    setSaved(true);
+    setTimeout(() => {
+      setSaved(false);
+      onClose();
+    }, 800);
+  };
+
+  return (
+    <>
+      {/* 백드롭 */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+      />
+
+      {/* 바텀 시트 */}
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 28, stiffness: 300 }}
+        className="fixed bottom-0 left-0 right-0 z-50 mx-auto max-w-lg rounded-t-[28px] bg-background shadow-2xl"
+        style={{ maxHeight: "90vh" }}
+      >
+        {/* 핸들 바 */}
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="h-1 w-10 rounded-full bg-gray-300 dark:bg-zinc-600" />
+        </div>
+
+        {/* 헤더 */}
+        <div className="flex items-center justify-between px-6 pt-2 pb-4 border-b border-gray-100 dark:border-zinc-800">
+          <h2 className="text-[18px] font-extrabold text-foreground">내 재무 정보 수정</h2>
+          <button
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-subtext hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* 폼 영역 — 스크롤 가능 */}
+        <div className="overflow-y-auto px-6 pb-8" style={{ maxHeight: "calc(90vh - 180px)" }}>
+          <div className="flex flex-col gap-4 pt-4">
+            {FIELD_CONFIGS.map(({ key, label, unit, isPercent, description }) => (
+              <div key={key} className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[13px] font-bold text-foreground">{label}</label>
+                  <span className="text-[11px] text-subtext">{description}</span>
+                </div>
+                <div className="flex items-center gap-2 rounded-2xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 px-4 py-3 focus-within:border-kakao-yellow focus-within:ring-2 focus-within:ring-kakao-yellow/20 transition-all">
+                  <input
+                    type="number"
+                    value={displayValue(key, isPercent)}
+                    onChange={(e) => handleChange(key, isPercent, e.target.value)}
+                    className="flex-1 bg-transparent text-[16px] font-bold text-foreground outline-none tabular-nums"
+                  />
+                  <span className="text-[13px] font-bold text-subtext">{unit}</span>
+                </div>
+                {/* 월 생활비 항목 아래에 월 저축액 힌트 표시 */}
+                {key === "monthlyExpense" && (
+                  <p className={`text-[12px] font-medium ${monthlySaving > 0 ? "text-blue-500" : "text-red-500"}`}>
+                    {monthlySaving > 0
+                      ? `→ 월 저축 예상액: ${(monthlySaving / 10000).toLocaleString()}만원`
+                      : "⚠️ 월 생활비가 소득을 초과합니다"}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 저장 버튼 */}
+        <div className="px-6 pb-8 pt-2">
+          <button
+            onClick={handleSave}
+            disabled={monthlySaving <= 0}
+            className={`flex w-full items-center justify-center gap-2 rounded-[18px] py-4 text-[16px] font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+              saved
+                ? "bg-green-500 text-white"
+                : "bg-kakao-yellow text-kakao-brown hover:scale-[1.02] active:scale-95 shadow-sm"
+            }`}
+          >
+            {saved ? (
+              <>
+                <Check size={18} />
+                저장 완료!
+              </>
+            ) : (
+              "변경 사항 저장하기"
+            )}
+          </button>
+        </div>
+      </motion.div>
+    </>
+  );
+}
+
+// ──────────────────────────────────────────────
 // 대시보드 메인 페이지
 // ──────────────────────────────────────────────
 export default function DashboardPage() {
@@ -403,6 +551,7 @@ export default function DashboardPage() {
   const [showSliderSheet, setShowSliderSheet] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showShareCard, setShowShareCard] = useState(false);
+  const [showSettingsSheet, setShowSettingsSheet] = useState(false);
   const [resistStats, setResistStats] = useState({ totalAmount: 0, totalDays: 0, count: 0 });
 
   useEffect(() => {
@@ -438,12 +587,14 @@ export default function DashboardPage() {
   // 실시간 카운트다운
   const countdown = useCountdown(monthsLeft);
 
-  // FIRE 달성률 (현재 자산 / 목표 자금)
+  // FIRE 달성률 (순자산 / 목표 자금)
   const fireProgress = useMemo(() => {
     if (!profile) return 0;
-    const target = calcTargetAmount(profile.targetExpense);
+    const target = profile.targetAssets;
     if (target <= 0) return 0;
-    return Math.min(1, profile.currentAssets / target);
+    const netAssets = profile.currentAssets - profile.loanAmount;
+    if (netAssets <= 0) return 0;
+    return Math.min(1, netAssets / target);
   }, [profile]);
 
   const handleResist = (amount: number, category: string) => {
@@ -491,6 +642,7 @@ export default function DashboardPage() {
           )}
         </div>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <button
             onClick={() => router.push("/stress-test")}
             className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
@@ -499,7 +651,7 @@ export default function DashboardPage() {
             <Zap size={20} />
           </button>
           <button
-            onClick={() => router.push("/dashboard/setup")}
+            onClick={() => setShowSettingsSheet(true)}
             className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
             aria-label="설정"
           >
@@ -560,15 +712,16 @@ export default function DashboardPage() {
               </div>
               <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-zinc-800">
                 <div
-                  className="h-full rounded-full bg-kakao-dark transition-all duration-700 ease-out"
+                  className="h-full rounded-full bg-kakao-dark dark:bg-kakao-yellow transition-all duration-700 ease-out"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
             </div>
 
             {/* 월 저축 기준 — 맨 아래 작게 */}
-            <p className="mt-4 text-[12px] font-medium text-gray-400">
-              월 {monthlySavingMan.toLocaleString()}만원 저축 기준
+            <p className="mt-4 text-[12px] font-medium text-gray-400 text-center leading-relaxed">
+              월 {monthlySavingMan.toLocaleString()}만원 저축 기준<br />
+              <span className="text-[11px] opacity-70">(입력된 월 소득 - 월 생활비)</span>
             </p>
 
             {/* 공유 버튼 */}
@@ -704,6 +857,17 @@ export default function DashboardPage() {
             monthlySavingMan={monthlySavingMan}
             nickname={session?.user?.name ?? ""}
             onClose={() => setShowShareCard(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* 설정 바텀시트 */}
+      <AnimatePresence>
+        {showSettingsSheet && profile && (
+          <SettingsSheet
+            profile={profile}
+            onClose={() => setShowSettingsSheet(false)}
+            onSave={(updated) => setProfile(updated)}
           />
         )}
       </AnimatePresence>

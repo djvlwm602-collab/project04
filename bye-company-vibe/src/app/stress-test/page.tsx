@@ -15,6 +15,7 @@ import type { UserProfile } from "@/lib/types";
 import { STRESS_SCENARIOS } from "@/lib/constants";
 import { calcMonthsFromProfile, formatProjectedDate } from "@/lib/calculator";
 import { loadProfile, isSetupDone } from "@/lib/storage";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function StressTestPage() {
   const router = useRouter();
@@ -96,15 +97,18 @@ export default function StressTestPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans text-foreground transition-colors duration-300">
       {/* 상단 헤더 — 뒤로가기 + 타이틀 */}
-      <header className="flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-6 shadow-sm dark:border-zinc-800 dark:bg-card">
-        <button
-          onClick={() => router.push("/dashboard")}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
-          aria-label="대시보드로 돌아가기"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <h1 className="text-lg font-extrabold tracking-tight">스트레스 테스트</h1>
+      <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm dark:border-zinc-800 dark:bg-card">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+            aria-label="대시보드로 돌아가기"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <h1 className="text-lg font-extrabold tracking-tight">스트레스 테스트</h1>
+        </div>
+        <ThemeToggle />
       </header>
 
       <main className="flex flex-1 flex-col items-center p-6 sm:p-10">
@@ -117,7 +121,7 @@ export default function StressTestPage() {
             className="rounded-[32px] bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
           >
             <div className="mb-5 flex items-center gap-2">
-              <ShieldAlert size={22} className="text-kakao-brown" />
+              <ShieldAlert size={22} className="text-kakao-brown dark:text-kakao-yellow" />
               <h2 className="text-[17px] font-extrabold">시나리오 비교</h2>
             </div>
 
@@ -130,7 +134,7 @@ export default function StressTestPage() {
               </div>
 
               {/* 시나리오 적용 */}
-              <div className="flex flex-col items-center gap-1 rounded-2xl bg-kakao-yellow/10 p-4">
+              <div className="flex flex-col items-center gap-1 rounded-2xl bg-kakao-yellow/10 dark:bg-kakao-yellow/20 border border-transparent dark:border-kakao-yellow/30 p-4">
                 <span className="text-[12px] font-bold text-subtext">시나리오 적용</span>
                 <span className="text-[22px] font-black text-foreground">{stressedMonths}개월</span>
                 <span className="text-[13px] font-bold text-subtext">{formatProjectedDate(stressedMonths)}</span>

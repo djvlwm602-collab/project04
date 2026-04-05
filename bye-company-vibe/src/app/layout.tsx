@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="h-full antialiased">
+    <html lang="ko" className="h-full antialiased" suppressHydrationWarning>
       <head>
         {/* Pretendard 웹폰트 — 한글 깨짐 방지 */}
         <link
@@ -33,7 +33,7 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

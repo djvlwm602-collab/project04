@@ -11,6 +11,8 @@
   --color-card: var(--card);
 }
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
   --background: #F5F6F8;
   --foreground: #111111;
@@ -18,13 +20,11 @@
   --card: #FFFFFF;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #111111;
-    --foreground: #F5F6F8;
-    --subtext: #A0A0A0;
-    --card: #1E1E1E;
-  }
+.dark {
+  --background: #111111;
+  --foreground: #F5F6F8;
+  --subtext: #A0A0A0;
+  --card: #1E1E1E;
 }
 
 body {
