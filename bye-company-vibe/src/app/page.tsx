@@ -20,6 +20,13 @@ export default function LoginPage() {
   const { data: session, status } = useSession();
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
+  // 이미 인증된 상태로 진입 시 설정 여부에 따라 리다이렉트
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace(isSetupDone() ? "/dashboard" : "/dashboard/setup");
+    }
+  }, [status, router]);
+
   const handleLogin = (provider: "kakao" | "google") => {
     setLoadingProvider(provider);
     const callbackUrl = isSetupDone() ? "/dashboard" : "/dashboard/setup";
@@ -89,7 +96,7 @@ export default function LoginPage() {
           <button
             onClick={() => handleLogin("google")}
             disabled={loadingProvider !== null}
-            className="group flex w-full items-center justify-center gap-2 rounded-[18px] bg-white py-4 text-[16px] font-bold text-gray-700 border border-gray-200 transition-all hover:scale-[1.02] active:scale-95 shadow-sm dark:bg-[#2A2A2A] dark:text-zinc-200 dark:border-zinc-700 disabled:opacity-60 disabled:hover:scale-100"
+            className="group flex w-full items-center justify-center gap-2 rounded-[18px] bg-white py-4 text-[16px] font-bold text-gray-700 border border-gray-200 transition-all hover:scale-[1.02] active:scale-95 shadow-sm disabled:opacity-60 disabled:hover:scale-100"
           >
             {loadingProvider === "google" ? (
               <Loader2 size={20} className="animate-spin" />
@@ -107,7 +114,7 @@ export default function LoginPage() {
 
         <p className="mt-2 mb-1 text-[13px] text-subtext text-center font-medium">
           아직 계정이 없으신가요?{" "}
-          <Link href="/signup" className="text-kakao-brown dark:text-kakao-yellow font-bold underline underline-offset-2 hover:opacity-80 transition-opacity">
+          <Link href="/signup" className="text-kakao-brown font-bold underline underline-offset-2 hover:opacity-80 transition-opacity">
             회원가입
           </Link>
         </p>

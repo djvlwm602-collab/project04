@@ -7,7 +7,7 @@
 "use client";
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
   Wallet, Rocket, AlertTriangle, Settings, Zap, X, LogOut,
@@ -136,7 +136,7 @@ function ResistForm({
         <h2 className="text-[18px] font-extrabold text-foreground">결제 충동 참기! 🎯</h2>
         <button
           onClick={onCancel}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100"
           aria-label="닫기"
         >
           <X size={18} />
@@ -152,7 +152,7 @@ function ResistForm({
           value={amount === 0 ? "" : amount}
           onChange={(e) => setAmount(Number(e.target.value))}
           placeholder="예) 15000"
-          className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-[16px] font-bold text-foreground outline-none transition-colors focus:border-kakao-yellow focus:ring-2 focus:ring-kakao-yellow/20 dark:border-zinc-700 dark:bg-zinc-800"
+          className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-[16px] font-bold text-foreground outline-none transition-colors focus:border-kakao-yellow focus:ring-2 focus:ring-kakao-yellow/20"
         />
       </div>
 
@@ -166,7 +166,7 @@ function ResistForm({
               className={`rounded-full px-4 py-1.5 text-[13px] font-bold transition-colors ${
                 selectedCategory === cat
                   ? "bg-kakao-yellow text-kakao-brown shadow-sm"
-                  : "bg-gray-100 text-subtext hover:bg-gray-200 dark:bg-zinc-800 dark:text-subtext dark:hover:bg-zinc-700"
+                  : "bg-gray-100 text-subtext hover:bg-gray-200"
               }`}
             >
               {cat}
@@ -178,7 +178,7 @@ function ResistForm({
       <div className="flex gap-3">
         <button
           onClick={onCancel}
-          className="flex-1 rounded-2xl border border-gray-200 py-3.5 text-[15px] font-bold text-subtext transition-colors hover:bg-gray-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          className="flex-1 rounded-2xl border border-gray-200 py-3.5 text-[15px] font-bold text-subtext transition-colors hover:bg-gray-50"
         >
           취소
         </button>
@@ -387,7 +387,7 @@ function SliderSheet({
         <h2 className="text-[18px] font-extrabold text-foreground">지출 스와이프 액션</h2>
         <button
           onClick={onClose}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100"
           aria-label="닫기"
         >
           <X size={18} />
@@ -407,7 +407,7 @@ function SliderSheet({
           step={SLIDER_STEP}
           value={sliderValue}
           onChange={(e) => setSliderValue(Number(e.target.value))}
-          className="h-2.5 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-kakao-dark dark:accent-kakao-yellow dark:bg-zinc-700"
+          className="h-2.5 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-kakao-dark"
         />
         <div className="mt-4 text-center text-[17px] font-extrabold">
           조정 금액: {sliderValue > 0 ? "+" : ""}{(sliderValue / 10000).toLocaleString()}만 원 / 월
@@ -417,10 +417,10 @@ function SliderSheet({
       <div
         className={`rounded-2xl p-5 text-[14.5px] font-bold leading-relaxed transition-colors ${
           sliderValue > 0
-            ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+            ? "bg-blue-50 text-blue-700"
             : sliderValue < 0
-            ? "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300"
-            : "bg-gray-100 text-subtext dark:bg-zinc-800 dark:text-zinc-200"
+            ? "bg-red-50 text-red-700"
+            : "bg-gray-100 text-subtext"
         }`}
       >
         {feedbackText}
@@ -517,15 +517,15 @@ function SettingsSheet({
       >
         {/* 핸들 바 */}
         <div className="flex justify-center pt-3 pb-1">
-          <div className="h-1 w-10 rounded-full bg-gray-300 dark:bg-zinc-600" />
+          <div className="h-1 w-10 rounded-full bg-gray-300" />
         </div>
 
         {/* 헤더 */}
-        <div className="flex items-center justify-between px-6 pt-2 pb-4 border-b border-gray-100 dark:border-zinc-800">
+        <div className="flex items-center justify-between px-6 pt-2 pb-4 border-b border-gray-100">
           <h2 className="text-[18px] font-extrabold text-foreground">내 재무 정보 수정</h2>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-subtext hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-subtext hover:bg-gray-100 transition-colors"
           >
             <X size={18} />
           </button>
@@ -540,7 +540,7 @@ function SettingsSheet({
                   <label className="text-[13px] font-bold text-foreground">{label}</label>
                   <span className="text-[11px] text-subtext">{description}</span>
                 </div>
-                <div className="flex items-center gap-2 rounded-2xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 px-4 py-3 focus-within:border-kakao-yellow focus-within:ring-2 focus-within:ring-kakao-yellow/20 transition-all">
+                <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 focus-within:border-kakao-yellow focus-within:ring-2 focus-within:ring-kakao-yellow/20 transition-all">
                   <input
                     type="number"
                     value={displayValue(key, isPercent)}
@@ -593,6 +593,7 @@ function SettingsSheet({
 // ──────────────────────────────────────────────
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session, status } = useSession();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -623,16 +624,18 @@ export default function DashboardPage() {
     setResistStats(getResistStats());
   }, []);
 
-  // 프로필 로드 완료 시 꽃가루 트리거 — 6초 후 자동 제거
+  // 설문 완료 후 진입 시 꽃가루 — URL ?confetti=1 감지 후 파라미터 제거
   useEffect(() => {
     if (!profile) return;
+    if (searchParams.get("confetti") !== "1") return;
+    router.replace("/dashboard");
     const mountTimer = setTimeout(() => setShowConfetti(true), 100);
     const unmountTimer = setTimeout(() => setShowConfetti(false), 6000);
     return () => {
       clearTimeout(mountTimer);
       clearTimeout(unmountTimer);
     };
-  }, [profile]);
+  }, [profile, searchParams, router]);
 
   const monthsLeft = useMemo(() => {
     if (!profile) return 0;
@@ -691,11 +694,11 @@ export default function DashboardPage() {
   const progressPercent = Math.round(fireProgress * 100);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F5F5F7] font-sans text-foreground dark:bg-zinc-950">
+    <div className="flex min-h-screen flex-col bg-[#F5F5F7] font-sans text-foreground">
       {showConfetti && <ConfettiExplosion />}
 
       {/* 상단 헤더 */}
-      <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm dark:border-zinc-800 dark:bg-card">
+      <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-extrabold tracking-tight">아임 파이어족</h1>
           {session?.user?.name && (
@@ -708,14 +711,14 @@ export default function DashboardPage() {
           <ThemeToggle />
           <button
             onClick={() => router.push("/stress-test")}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100"
             aria-label="스트레스 테스트"
           >
             <Zap size={20} />
           </button>
           <button
             onClick={() => setShowSettingsSheet(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100"
             aria-label="설정"
           >
             <Settings size={20} />
@@ -725,7 +728,7 @@ export default function DashboardPage() {
               clearUserData();
               signOut({ callbackUrl: "/" });
             }}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100"
             aria-label="로그아웃"
           >
             <LogOut size={20} />
@@ -737,7 +740,7 @@ export default function DashboardPage() {
         <div className="w-full max-w-md space-y-5">
 
           {/* ========== D-Day 메인 카드 — 세로형, 단색 배경, 깔끔하게 ========== */}
-          <div className="flex flex-col items-center rounded-[28px] bg-white px-8 py-10 shadow-[0_2px_20px_rgb(0,0,0,0.06)] dark:bg-zinc-900 dark:shadow-[0_2px_20px_rgb(0,0,0,0.2)]">
+          <div className="flex flex-col items-center rounded-[28px] bg-white px-8 py-10 shadow-[0_2px_20px_rgb(0,0,0,0.06)]">
 
             {/* 실시간 카운트다운 타이머 — 상단 */}
             <div className="flex items-center gap-1.5">
@@ -748,7 +751,7 @@ export default function DashboardPage() {
                 { value: countdown.seconds, label: "초" },
               ].map(({ value, label }) => (
                 <div key={label} className="flex items-baseline gap-0.5">
-                  <span className="inline-block min-w-[2.2ch] rounded-lg bg-gray-100 px-2 py-1.5 text-center text-[18px] font-black tabular-nums text-gray-700 dark:bg-zinc-800 dark:text-zinc-200">
+                  <span className="inline-block min-w-[2.2ch] rounded-lg bg-gray-100 px-2 py-1.5 text-center text-[18px] font-black tabular-nums text-gray-700">
                     {String(value).padStart(2, "0")}
                   </span>
                   <span className="text-[11px] font-bold text-gray-400">{label}</span>
@@ -759,10 +762,10 @@ export default function DashboardPage() {
             {/* D-Day + 은퇴가능일 — 가운데, 큼직하게 */}
             <div className="mt-8 flex flex-col items-center gap-2">
               <p className="text-[14px] font-bold text-gray-400">예상 은퇴 가능일</p>
-              <h2 className="text-[42px] font-black tracking-tight text-gray-900 dark:text-white leading-none">
+              <h2 className="text-[42px] font-black tracking-tight text-gray-900 leading-none">
                 D-{dDay.toLocaleString()}
               </h2>
-              <p className="mt-1 text-[20px] font-extrabold text-gray-700 dark:text-zinc-300">
+              <p className="mt-1 text-[20px] font-extrabold text-gray-700">
                 {formattedDate}
               </p>
             </div>
@@ -771,11 +774,11 @@ export default function DashboardPage() {
             <div className="mt-10 w-full">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[12px] font-bold text-gray-400">FIRE 달성률</span>
-                <span className="text-[13px] font-extrabold text-gray-600 dark:text-zinc-300">{progressPercent}%</span>
+                <span className="text-[13px] font-extrabold text-gray-600">{progressPercent}%</span>
               </div>
-              <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-zinc-800">
+              <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
                 <div
-                  className="h-full rounded-full bg-kakao-dark dark:bg-kakao-yellow transition-all duration-700 ease-out"
+                  className="h-full rounded-full bg-kakao-yellow transition-all duration-700 ease-out"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
@@ -790,7 +793,7 @@ export default function DashboardPage() {
             {/* 공유 버튼 */}
             <button
               onClick={() => setShowShareCard(true)}
-              className="mt-5 flex items-center gap-1.5 rounded-full bg-gray-100 px-4 py-2 text-[13px] font-bold text-gray-500 transition-colors hover:bg-gray-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
+              className="mt-5 flex items-center gap-1.5 rounded-full bg-gray-100 px-4 py-2 text-[13px] font-bold text-gray-500 transition-colors hover:bg-gray-200"
             >
               <Share2 size={14} />
               공유하기
@@ -803,11 +806,11 @@ export default function DashboardPage() {
             {/* 지출 시뮬레이션 버튼 */}
             <button
               onClick={() => setShowSliderSheet(true)}
-              className="flex w-full items-center justify-between rounded-2xl bg-white px-5 py-4 shadow-[0_1px_8px_rgb(0,0,0,0.04)] transition-colors hover:bg-gray-50 active:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+              className="flex w-full items-center justify-between rounded-2xl bg-white px-5 py-4 shadow-[0_1px_8px_rgb(0,0,0,0.04)] transition-colors hover:bg-gray-50 active:bg-gray-100"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/30">
-                  <Wallet size={18} className="text-blue-500" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-50">
+                  <Wallet size={18} className="text-amber-500" />
                 </div>
                 <div className="text-left">
                   <p className="text-[15px] font-bold text-foreground">지출 시뮬레이션</p>
@@ -820,10 +823,10 @@ export default function DashboardPage() {
             {/* 충동 참기 버튼 */}
             <button
               onClick={() => setShowResistModal(true)}
-              className="flex w-full items-center justify-between rounded-2xl bg-white px-5 py-4 shadow-[0_1px_8px_rgb(0,0,0,0.04)] transition-colors hover:bg-gray-50 active:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+              className="flex w-full items-center justify-between rounded-2xl bg-white px-5 py-4 shadow-[0_1px_8px_rgb(0,0,0,0.04)] transition-colors hover:bg-gray-50 active:bg-gray-100"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-50 dark:bg-amber-900/30">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-50">
                   <AlertTriangle size={18} className="text-amber-500" />
                 </div>
                 <div className="text-left">
@@ -841,11 +844,11 @@ export default function DashboardPage() {
             {/* 스트레스 테스트 버튼 */}
             <button
               onClick={() => router.push("/stress-test")}
-              className="flex w-full items-center justify-between rounded-2xl bg-white px-5 py-4 shadow-[0_1px_8px_rgb(0,0,0,0.04)] transition-colors hover:bg-gray-50 active:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+              className="flex w-full items-center justify-between rounded-2xl bg-white px-5 py-4 shadow-[0_1px_8px_rgb(0,0,0,0.04)] transition-colors hover:bg-gray-50 active:bg-gray-100"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-50 dark:bg-purple-900/30">
-                  <Zap size={18} className="text-purple-500" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-50">
+                  <Zap size={18} className="text-amber-500" />
                 </div>
                 <div className="text-left">
                   <p className="text-[15px] font-bold text-foreground">스트레스 테스트</p>
@@ -877,7 +880,7 @@ export default function DashboardPage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl bg-white pb-safe dark:bg-card"
+              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl bg-white pb-safe"
             >
               <ResistForm onSubmit={handleResist} onCancel={() => setShowResistModal(false)} />
             </motion.div>
@@ -903,7 +906,7 @@ export default function DashboardPage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl bg-white pb-safe dark:bg-card"
+              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl bg-white pb-safe"
             >
               <SliderSheet profile={profile} onClose={() => setShowSliderSheet(false)} />
             </motion.div>
@@ -930,7 +933,11 @@ export default function DashboardPage() {
           <SettingsSheet
             profile={profile}
             onClose={() => setShowSettingsSheet(false)}
-            onSave={(updated) => setProfile(updated)}
+            onSave={(updated) => {
+              setProfile(updated);
+              setShowConfetti(true);
+              setTimeout(() => setShowConfetti(false), 6000);
+            }}
           />
         )}
       </AnimatePresence>
@@ -947,7 +954,7 @@ export default function DashboardPage() {
             className="pointer-events-none fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4"
           >
             <div className="absolute inset-0 bg-black/20" />
-            <div className="relative flex flex-col items-center gap-3 rounded-[32px] bg-white px-12 py-10 shadow-2xl dark:bg-card">
+            <div className="relative flex flex-col items-center gap-3 rounded-[32px] bg-white px-12 py-10 shadow-2xl">
               <span className="text-6xl">🎉</span>
               <p className="text-[24px] font-black text-foreground">대단해요!</p>
               <p className="text-[15px] font-bold text-subtext">참기 기록이 저장됐습니다</p>

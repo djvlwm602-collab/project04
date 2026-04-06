@@ -20,14 +20,14 @@ export default function SignupPage() {
   const { status } = useSession();
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
-  // TODO: 회원가입 플로우 확인 후 다시 활성화할 것
-  // useEffect(() => {
-  //   if (status === "authenticated") {
-  //     if (isSetupDone()) router.replace("/dashboard");
-  //     else if (isSignupDone()) router.replace("/dashboard/setup");
-  //     else router.replace("/signup/profile");
-  //   }
-  // }, [status, router]);
+  // 이미 인증된 상태로 진입 시 설정 여부에 따라 리다이렉트
+  useEffect(() => {
+    if (status === "authenticated") {
+      if (isSetupDone()) router.replace("/dashboard");
+      else if (isSignupDone()) router.replace("/dashboard/setup");
+      else router.replace("/signup/profile");
+    }
+  }, [status, router]);
 
   const handleSignup = (provider: "kakao" | "google") => {
     setLoadingProvider(provider);
@@ -100,7 +100,7 @@ export default function SignupPage() {
           <button
             onClick={() => handleSignup("google")}
             disabled={loadingProvider !== null}
-            className="group flex w-full items-center justify-center gap-2 rounded-[18px] bg-white py-4 text-[16px] font-bold text-gray-700 border border-gray-200 transition-all hover:scale-[1.02] active:scale-95 shadow-sm dark:bg-[#2A2A2A] dark:text-zinc-200 dark:border-zinc-700 disabled:opacity-60 disabled:hover:scale-100"
+            className="group flex w-full items-center justify-center gap-2 rounded-[18px] bg-white py-4 text-[16px] font-bold text-gray-700 border border-gray-200 transition-all hover:scale-[1.02] active:scale-95 shadow-sm disabled:opacity-60 disabled:hover:scale-100"
           >
             {loadingProvider === "google" ? (
               <Loader2 size={20} className="animate-spin" />
@@ -118,7 +118,7 @@ export default function SignupPage() {
 
         <p className="mt-2 mb-2 text-[13px] text-subtext text-center font-medium">
           이미 계정이 있으신가요?{" "}
-          <Link href="/" className="text-kakao-brown dark:text-kakao-yellow font-bold underline underline-offset-2 hover:opacity-80 transition-opacity">
+          <Link href="/" className="text-kakao-brown font-bold underline underline-offset-2 hover:opacity-80 transition-opacity">
             로그인
           </Link>
         </p>

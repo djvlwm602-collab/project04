@@ -212,14 +212,14 @@ export default function SetupPage() {
     markSetupDone();
     setIsCalculating(true);
     setTimeout(() => {
-      router.push("/dashboard");
+      router.push("/dashboard?confetti=1");
     }, 3000);
   };
 
   if (isCalculating) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-background">
-        <div className="mb-8 h-16 w-16 animate-spin rounded-full border-4 border-gray-200 dark:border-zinc-800 border-t-kakao-yellow dark:border-t-kakao-yellow" />
+        <div className="mb-8 h-16 w-16 animate-spin rounded-full border-4 border-gray-200 border-t-kakao-yellow" />
         <h2 className="text-2xl font-extrabold text-foreground">은퇴날짜를 계산중입니다 ⏳</h2>
         <p className="mt-3 text-[15px] font-medium text-subtext text-center leading-relaxed">
           입력하신 데이터를 바탕으로<br />자유의 날을 확실하게 찾고 있어요 🚀
@@ -260,7 +260,7 @@ export default function SetupPage() {
     <div className="relative flex min-h-screen flex-col items-center justify-center p-6 bg-background">
       <div className="absolute top-0 left-0 w-full z-20 px-6 pt-8 pb-4 bg-background/80 backdrop-blur-md sm:px-12 sm:pt-10">
         <div className="mx-auto w-full max-w-md relative">
-          <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-zinc-700 overflow-hidden">
+          <div className="h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
             <motion.div
               className="h-full rounded-full bg-kakao-yellow"
               initial={{ width: 0 }}
@@ -308,7 +308,7 @@ export default function SetupPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.1 }}
-                className="rounded-2xl bg-card p-6 shadow-[0_4px_16px_rgb(0,0,0,0.04)] dark:shadow-[0_4px_16px_rgb(0,0,0,0.15)]"
+                className="rounded-2xl bg-card p-6 shadow-[0_4px_16px_rgb(0,0,0,0.04)]"
               >
                 {/* 아이콘 + 설명 */}
                 <div className="flex items-center gap-3 mb-5">
@@ -326,7 +326,7 @@ export default function SetupPage() {
                     min={0}
                     value={formatInputValue(profile, currentField.key, currentField.isPercent)}
                     onChange={(e) => handleChange(currentField.key, currentField.isPercent, e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-background px-4 py-3.5 text-right text-xl font-extrabold text-foreground outline-none focus:border-kakao-brown focus:ring-2 focus:ring-kakao-brown/30 dark:border-zinc-700 transition"
+                    className="w-full rounded-xl border border-gray-200 bg-background px-4 py-3.5 text-right text-xl font-extrabold text-foreground outline-none focus:border-kakao-brown focus:ring-2 focus:ring-kakao-brown/30 transition"
                   />
                   <span className="shrink-0 text-base font-bold text-subtext">
                     {currentField.unit}
@@ -344,7 +344,7 @@ export default function SetupPage() {
                         className={`flex-1 min-w-[60px] rounded-xl px-3 py-2.5 text-sm font-bold transition-all ${
                           isActive
                             ? "bg-kakao-yellow text-kakao-brown shadow-sm scale-[1.02]"
-                            : "bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
+                            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                         }`}
                       >
                         {label}
@@ -360,7 +360,7 @@ export default function SetupPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2, duration: 0.3 }}
-                  className="rounded-2xl bg-card px-5 py-4 shadow-[0_4px_16px_rgb(0,0,0,0.04)] dark:shadow-[0_4px_16px_rgb(0,0,0,0.15)]"
+                  className="rounded-2xl bg-card px-5 py-4 shadow-[0_4px_16px_rgb(0,0,0,0.04)]"
                 >
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-subtext">예상 월 저축액</p>
@@ -381,7 +381,7 @@ export default function SetupPage() {
               <div className="flex gap-3">
                 <button
                   onClick={handleBack}
-                  className="flex items-center justify-center gap-1 rounded-[18px] border border-gray-200 dark:border-zinc-700 px-5 py-4 text-[14px] font-bold text-subtext transition-all hover:bg-gray-50 dark:hover:bg-zinc-800 active:scale-95"
+                  className="flex items-center justify-center gap-1 rounded-[18px] border border-gray-200 px-5 py-4 text-[14px] font-bold text-subtext transition-all hover:bg-gray-50 active:scale-95"
                 >
                   <ArrowLeft size={16} />
                   이전

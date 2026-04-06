@@ -106,12 +106,10 @@ export function markSignupDone(): void {
   localStorage.setItem(SIGNUP_DONE_KEY, "true");
 }
 
-// 로그아웃 시 사용자 데이터 정리 — 세션과 로컬 데이터 동시 제거
+// 로그아웃 시 세션성 데이터만 정리 — 프로필/설정 완료 여부는 유지해 재로그인 시 결과 페이지로 바로 이동
 export function clearUserData(): void {
   if (typeof window === "undefined") return;
-  localStorage.removeItem(PROFILE_KEY);
   localStorage.removeItem(RESIST_KEY);
-  localStorage.removeItem(SETUP_DONE_KEY);
   localStorage.removeItem(NICKNAME_KEY);
   localStorage.removeItem(SIGNUP_DONE_KEY);
 }

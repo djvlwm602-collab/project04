@@ -71,7 +71,7 @@ export default function ProfileSetupPage() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="flex w-full max-w-md flex-col items-center gap-6 rounded-3xl bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
+        className="flex w-full max-w-md flex-col items-center gap-6 rounded-3xl bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
       >
         {/* 단계 표시 */}
         <p className="text-[13px] font-bold text-subtext">가입 2단계 중 1단계</p>
@@ -90,7 +90,7 @@ export default function ProfileSetupPage() {
           transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
           className="relative"
         >
-          <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-100 shadow-lg dark:bg-zinc-800">
+          <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-100 shadow-lg">
             {profileImage ? (
               <img
                 src={profileImage}
@@ -120,7 +120,7 @@ export default function ProfileSetupPage() {
             }}
             placeholder="2~12자 닉네임"
             maxLength={12}
-            className="w-full rounded-2xl border border-gray-200 bg-background px-4 py-3.5 text-[16px] font-bold text-foreground outline-none transition-colors focus:border-kakao-yellow focus:ring-2 focus:ring-kakao-yellow/20 dark:border-zinc-700"
+            className="w-full rounded-2xl border border-gray-200 bg-background px-4 py-3.5 text-[16px] font-bold text-foreground outline-none transition-colors focus:border-kakao-yellow focus:ring-2 focus:ring-kakao-yellow/20"
           />
           <div className="flex items-center justify-between">
             {error ? (
@@ -136,7 +136,7 @@ export default function ProfileSetupPage() {
 
         {/* 소셜 계정 정보 표시 */}
         {session?.user?.email && (
-          <div className="flex w-full items-center gap-3 rounded-2xl bg-gray-50 px-4 py-3 dark:bg-zinc-800/50">
+          <div className="flex w-full items-center gap-3 rounded-2xl bg-gray-50 px-4 py-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-kakao-yellow/30 text-kakao-brown">
               <User size={14} />
             </div>

@@ -97,11 +97,11 @@ export default function StressTestPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans text-foreground transition-colors duration-300">
       {/* 상단 헤더 — 뒤로가기 + 타이틀 */}
-      <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm dark:border-zinc-800 dark:bg-card">
+      <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/dashboard")}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext transition-colors hover:bg-gray-100"
             aria-label="대시보드로 돌아가기"
           >
             <ArrowLeft size={20} />
@@ -118,23 +118,23 @@ export default function StressTestPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-[32px] bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
+            className="rounded-[32px] bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)]"
           >
             <div className="mb-5 flex items-center gap-2">
-              <ShieldAlert size={22} className="text-kakao-brown dark:text-kakao-yellow" />
+              <ShieldAlert size={22} className="text-kakao-brown" />
               <h2 className="text-[17px] font-extrabold">시나리오 비교</h2>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               {/* 현재 예상 */}
-              <div className="flex flex-col items-center gap-1 rounded-2xl bg-gray-50 p-4 dark:bg-zinc-800">
+              <div className="flex flex-col items-center gap-1 rounded-2xl bg-gray-50 p-4">
                 <span className="text-[12px] font-bold text-subtext">현재 예상</span>
                 <span className="text-[22px] font-black text-foreground">{baseMonths}개월</span>
                 <span className="text-[13px] font-bold text-subtext">{formatProjectedDate(baseMonths)}</span>
               </div>
 
               {/* 시나리오 적용 */}
-              <div className="flex flex-col items-center gap-1 rounded-2xl bg-kakao-yellow/10 dark:bg-kakao-yellow/20 border border-transparent dark:border-kakao-yellow/30 p-4">
+              <div className="flex flex-col items-center gap-1 rounded-2xl bg-kakao-yellow/10 border border-transparent p-4">
                 <span className="text-[12px] font-bold text-subtext">시나리오 적용</span>
                 <span className="text-[22px] font-black text-foreground">{stressedMonths}개월</span>
                 <span className="text-[13px] font-bold text-subtext">{formatProjectedDate(stressedMonths)}</span>
@@ -150,23 +150,23 @@ export default function StressTestPage() {
               >
                 {stressedMonths >= 600 ? (
                   /* 50년 내 은퇴 불가 경고 */
-                  <div className="flex items-center justify-center gap-2 rounded-2xl bg-red-50 px-4 py-3 text-[14px] font-bold text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                  <div className="flex items-center justify-center gap-2 rounded-2xl bg-red-50 px-4 py-3 text-[14px] font-bold text-red-600">
                     <ShieldAlert size={16} />
                     50년 내 은퇴가 어렵습니다
                   </div>
                 ) : monthDiff > 0 ? (
                   /* 은퇴일이 늘어난 경우 — 빨간색 경고 */
-                  <div className="rounded-2xl bg-red-50 px-4 py-3 text-center text-[14px] font-bold text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                  <div className="rounded-2xl bg-red-50 px-4 py-3 text-center text-[14px] font-bold text-red-600">
                     +{monthDiff}개월 늘어남
                   </div>
                 ) : monthDiff < 0 ? (
                   /* 은퇴일이 단축된 경우 — 파란색 축하 */
-                  <div className="rounded-2xl bg-blue-50 px-4 py-3 text-center text-[14px] font-bold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                  <div className="rounded-2xl bg-blue-50 px-4 py-3 text-center text-[14px] font-bold text-blue-600">
                     {Math.abs(monthDiff)}개월 단축!
                   </div>
                 ) : (
                   /* 변화 없음 */
-                  <div className="rounded-2xl bg-gray-100 px-4 py-3 text-center text-[14px] font-bold text-subtext dark:bg-zinc-800">
+                  <div className="rounded-2xl bg-gray-100 px-4 py-3 text-center text-[14px] font-bold text-subtext">
                     변화 없음
                   </div>
                 )}
@@ -201,7 +201,7 @@ export default function StressTestPage() {
                   className={`flex w-full items-center gap-4 rounded-[24px] border-2 p-5 text-left transition-all active:scale-[0.98] ${
                     isActive
                       ? "border-kakao-yellow bg-kakao-yellow/20"
-                      : "border-transparent bg-card shadow-[0_4px_16px_rgb(0,0,0,0.05)] dark:shadow-[0_4px_16px_rgb(0,0,0,0.15)]"
+                      : "border-transparent bg-card shadow-[0_4px_16px_rgb(0,0,0,0.05)]"
                   }`}
                 >
                   {/* 선택 여부 표시 원형 인디케이터 */}
@@ -209,7 +209,7 @@ export default function StressTestPage() {
                     className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
                       isActive
                         ? "border-kakao-brown bg-kakao-brown"
-                        : "border-gray-300 bg-transparent dark:border-zinc-600"
+                        : "border-gray-300 bg-transparent"
                     }`}
                   >
                     {isActive && (
