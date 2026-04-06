@@ -20,6 +20,55 @@ import { saveResistRecord, getResistStats, loadProfile, isSetupDone, clearUserDa
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 // ──────────────────────────────────────────────
+// 꽃가루 애니메이션 — 결과 페이지 진입 시 축하 효과
+// 조각 데이터를 모듈 레벨에서 한 번만 생성 — 재렌더링 시 값 변경 방지
+// ──────────────────────────────────────────────
+const CONFETTI_COLORS = ["#ef4444", "#3b82f6", "#22c55e", "#eab308", "#8b5cf6", "#f97316"];
+const CONFETTI_PIECES = Array.from({ length: 100 }, (_, i) => ({
+  id: i,
+  left: Math.random() * 100,
+  top: -20 + Math.random() * 10,
+  rotate: Math.random() * 360,
+  duration: 2.5 + Math.random() * 2.5,
+  delay: Math.random() * 2,
+  color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+}));
+
+const ConfettiExplosion = () => (
+  <>
+    <style>
+      {`
+        @keyframes fall {
+          0% {
+            transform: translateY(-10vh) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(110vh) rotate(720deg);
+            opacity: 0;
+          }
+        }
+      `}
+    </style>
+    <div className="fixed inset-0 z-[70] pointer-events-none" aria-hidden="true">
+      {CONFETTI_PIECES.map((p) => (
+        <div
+          key={p.id}
+          className="absolute w-2 h-4"
+          style={{
+            left: `${p.left}%`,
+            top: `${p.top}%`,
+            backgroundColor: p.color,
+            transform: `rotate(${p.rotate}deg)`,
+            animation: `fall ${p.duration}s ${p.delay}s linear forwards`,
+          }}
+        />
+      ))}
+    </div>
+  </>
+);
+
+// ──────────────────────────────────────────────
 // 실시간 카운트다운 훅 — 초 단위로 남은 시간 계산
 // ──────────────────────────────────────────────
 function useCountdown(months: number) {
@@ -553,6 +602,7 @@ export default function DashboardPage() {
   const [showShareCard, setShowShareCard] = useState(false);
   const [showSettingsSheet, setShowSettingsSheet] = useState(false);
   const [resistStats, setResistStats] = useState({ totalAmount: 0, totalDays: 0, count: 0 });
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -572,6 +622,17 @@ export default function DashboardPage() {
   useEffect(() => {
     setResistStats(getResistStats());
   }, []);
+
+  // 프로필 로드 완료 시 꽃가루 트리거 — 6초 후 자동 제거
+  useEffect(() => {
+    if (!profile) return;
+    const mountTimer = setTimeout(() => setShowConfetti(true), 100);
+    const unmountTimer = setTimeout(() => setShowConfetti(false), 6000);
+    return () => {
+      clearTimeout(mountTimer);
+      clearTimeout(unmountTimer);
+    };
+  }, [profile]);
 
   const monthsLeft = useMemo(() => {
     if (!profile) return 0;
@@ -631,6 +692,8 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F5F5F7] font-sans text-foreground dark:bg-zinc-950">
+      {showConfetti && <ConfettiExplosion />}
+
       {/* 상단 헤더 */}
       <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm dark:border-zinc-800 dark:bg-card">
         <div className="flex items-center gap-2">
