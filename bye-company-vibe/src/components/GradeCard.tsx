@@ -70,7 +70,7 @@ export function GradeCard({ grade, profile, nickname, retirementDate, onClose }:
         URL.revokeObjectURL(url);
       }
     } catch (e) {
-      if (e instanceof Error && e.name !== "AbortError") console.error(e);
+      if (e instanceof Error && e.name !== "AbortError") { /* 공유 실패 — 사용자가 이미 UI로 확인 가능 */ }
     } finally {
       setSaving(false);
     }

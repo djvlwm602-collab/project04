@@ -32,6 +32,13 @@ export default function ResignationPage() {
     if (loaded) setLetter(loaded);
   }, []);
 
+  // 컴포넌트 언마운트 시 타이머 정리 — 메모리 누수 방지
+  useEffect(() => {
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
+  }, []);
+
   const handleChange = (field: keyof ResignationLetter, value: string) => {
     const updated = { ...letter, [field]: value, updatedAt: new Date().toISOString() };
     setLetter(updated);

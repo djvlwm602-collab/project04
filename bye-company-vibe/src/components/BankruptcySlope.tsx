@@ -48,7 +48,7 @@ export function BankruptcySlope({ data, retirementLabel }: Props) {
           width={40}
         />
         <Tooltip
-          formatter={(value: number) => [formatAssets(value), "자산"]}
+          formatter={(value) => [formatAssets(Number(value ?? 0)), "자산"]}
           labelStyle={{ fontSize: 12, fontWeight: "bold" }}
           contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}
         />
