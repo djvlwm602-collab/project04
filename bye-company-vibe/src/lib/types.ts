@@ -1,41 +1,53 @@
 /**
  * 역할: 프로젝트 전역에서 사용하는 타입 정의
- * 핵심 기능: UserProfile, ResistRecord, FeedbackItem, StressScenario
+ * 핵심 기능: UserProfile (6문 6답), 서바이벌 킷 타입
  * 의존: 없음
  */
 
+// 6문 6답으로 수집하는 재무 프로필
 export interface UserProfile {
-  currentAssets: number;      // 현재 총 자산 (원)
-  loanAmount: number;         // 보유 대출금 (원)
-  targetAssets: number;       // 은퇴 목표 자산 (원)
-  monthlyIncome: number;      // 월 합산 소득 (원)
-  monthlyExpense: number;     // 월 생활비 (원)
-  investReturnRate: number;   // 연 투자 수익률 (0.06 = 6%)
+  liquidAssets: number;       // Q1 즉시 동원 가능한 현금 (원)
+  monthlySavings: number;     // Q2 월 순저축액 (원)
+  investReturnRate: number;   // Q3 연 투자 수익률 (0.06 = 6%)
+  retirementYears: number;    // Q4 은퇴까지 남은 연수
+  monthlyExpense: number;     // Q5 은퇴 후 월 생활비 (원)
+  retirementPlan: string;     // Q6 퇴사 후 계획 (주관식)
 }
 
-export interface ResistRecord {
+export type RetirementGrade = "S" | "A" | "B" | "C";
+
+// 파산 슬로프 차트용 데이터 포인트
+export interface AssetDataPoint {
+  label: string;    // "현재", "3년 후", "은퇴", "+10년" 등
+  assets: number;   // 해당 시점 자산 (원)
+  phase: "accumulation" | "drawdown"; // 적립기 / 인출기
+}
+
+// 데스노트 항목
+export interface DeathNoteEntry {
   id: string;
-  amount: number;             // 참은 금액 (원)
-  category: string;           // 카테고리
-  savedDays: number;          // 앞당겨진 은퇴 일수
-  createdAt: string;          // ISO 날짜 문자열
+  name: string;       // 이름/별명
+  reason: string;     // 이유
+  createdAt: string;  // ISO 날짜 문자열
 }
 
-export interface FeedbackItem {
-  minAmount: number;       // 이 금액 이상일 때 매칭
-  label: string;           // 항목명
-  messages: string[];      // 랜덤 선택할 문구 배열 ({months}는 실제 개월 수로 치환)
+// 사직서
+export interface ResignationLetter {
+  recipient: string;    // 수신인 (예: "OOO 대표이사 귀중")
+  content: string;      // 본문
+  updatedAt: string;    // 마지막 수정 ISO 날짜
+}
+
+// 은퇴 후 일과 항목
+export interface RoutineItem {
+  id: string;
+  startHour: number;    // 0~23
+  durationHours: number; // 1~24
+  activity: string;      // 활동명
+  color: string;         // hex 색상
 }
 
 export interface UserNickname {
-  nickname: string;            // 서비스 내 닉네임
-  profileImage?: string;       // 프로필 이미지 URL
-}
-
-export interface StressScenario {
-  id: string;
-  name: string;
-  emoji: string;
-  description: string;
-  apply: (profile: UserProfile) => UserProfile;
+  nickname: string;
+  profileImage?: string;
 }
