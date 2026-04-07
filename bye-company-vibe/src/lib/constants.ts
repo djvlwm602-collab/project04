@@ -1,152 +1,81 @@
 /**
- * 역할: 기본값, 피드백 문구, 스트레스 시나리오 등 상수 관리
- * 핵심 기능: DEFAULT_PROFILE, FIRE_MULTIPLIER, 피드백 문구, 스트레스 시나리오
+ * 역할: 기본값, 등급 임계값, T형 경고 문구 상수 관리
+ * 핵심 기능: DEFAULT_PROFILE, GRADE_THRESHOLDS, T_WARNINGS
  * 의존: types.ts
  */
 
-import type { UserProfile, FeedbackItem, StressScenario } from "./types";
+import type { UserProfile, RetirementGrade } from "./types";
 
-// 통계청 2024 기준 40대 맞벌이 딩크 가구 기본값
 export const DEFAULT_PROFILE: UserProfile = {
-  currentAssets: 400000000,
-  loanAmount: 100000000,
-  targetAssets: 1500000000,
-  monthlyIncome: 8000000,
-  monthlyExpense: 3500000,
-  investReturnRate: 0.06,
+  liquidAssets: 50000000,      // 5,000만원
+  monthlySavings: 1000000,     // 100만원
+  investReturnRate: 0.06,      // 6%
+  retirementYears: 10,         // 10년
+  monthlyExpense: 2000000,     // 200만원
+  retirementPlan: "",
 };
 
-export const FIRE_MULTIPLIER = 25;
+// 은퇴 자금이 몇 년을 버티는지에 따른 등급
+export const GRADE_THRESHOLDS: Record<RetirementGrade, number> = {
+  S: 35,   // 35년 이상 버팀 → "지금 당장 사표"
+  A: 20,   // 20~35년 → "조만간 짐 싸도 됩니다"
+  B: 10,   // 10~20년 → "굶고 사세요"
+  C: 0,    // 10년 미만 → "죽기 전날까지 출근"
+};
 
-export const SLIDER_MIN = -500000;
-export const SLIDER_MAX = 500000;
-export const SLIDER_STEP = 50000;
+export const GRADE_META: Record<RetirementGrade, {
+  label: string;
+  caption: string;
+  color: string;
+  bg: string;
+}> = {
+  S: {
+    label: "지금 당장 사표 던지세요",
+    caption: "지옥 탈출 성공. 난 먼저 간다, 니들은 알아서 버텨라. ㅃㅇ",
+    color: "text-emerald-600",
+    bg: "bg-emerald-50",
+  },
+  A: {
+    label: "조만간 짐 싸셔도 됩니다",
+    caption: "내 해방일은 20XX년. 이 회사 사람들 얼굴 볼 날도 얼마 안 남았다.",
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+  },
+  B: {
+    label: "은퇴는 되는데 굶고 사세요",
+    caption: "탈출은 하는데... 은퇴 후에 물만 마셔야 함. 이게 맞냐?",
+    color: "text-amber-600",
+    bg: "bg-amber-50",
+  },
+  C: {
+    label: "죽기 전날까지 출근하세요",
+    caption: "내 은퇴일: 계산 불가. 난 그냥 회사의 부품이었음",
+    color: "text-red-600",
+    bg: "bg-red-50",
+  },
+};
 
-export const SAVING_FEEDBACKS: FeedbackItem[] = [
-  {
-    minAmount: 500000,
-    label: "해외여행 적금",
-    messages: [
-      "올해 여행은 퇴직 후 세계일주로! 은퇴가 {months}개월 앞당겨집니다!",
-      "비행기 값 아끼면 은퇴행 티켓이 {months}개월 빨라집니다!",
-    ],
-  },
-  {
-    minAmount: 300000,
-    label: "골프 라운딩 1회",
-    messages: [
-      "필드 대신 퇴직금 필드를 채우세요! 은퇴 {months}개월 단축!",
-      "스윙 대신 저축 스윙! 은퇴가 {months}개월 가까워집니다!",
-    ],
-  },
-  {
-    minAmount: 150000,
-    label: "오마카세 1회",
-    messages: [
-      "오마카세 포기 = 은퇴 {months}개월 앞당김!",
-      "오늘의 참치 대신 내일의 자유! {months}개월 단축!",
-    ],
-  },
-  {
-    minAmount: 100000,
-    label: "배달 8회",
-    messages: [
-      "치킨 참으면 사표가 {months}개월 가까워집니다!",
-      "배달 대신 자취 요리! 은퇴 {months}개월 앞당김!",
-    ],
-  },
-  {
-    minAmount: 50000,
-    label: "커피 20잔",
-    messages: [
-      "아아 대신 물 마시면 은퇴가 {months}개월 빨라집니다!",
-      "커피값 모으면 은퇴가 {months}개월 앞당겨져요!",
-    ],
-  },
+// Q3 수익률 실시간 T형 경고 문구
+export const RETURN_RATE_WARNINGS: Array<{ threshold: number; message: string }> = [
+  { threshold: 0.3, message: "마법사인가요? 워렌 버핏도 연 20%입니다." },
+  { threshold: 0.2, message: "코인 트레이더십니까? 계좌가 증명하는 숫자를 쓰세요." },
+  { threshold: 0.15, message: "희망 회로 작동 중. 현실적으로 조정하세요." },
+  { threshold: 0.1, message: "공격적이네요. S&P500 장기 평균은 10%입니다." },
 ];
 
-export const SPENDING_FEEDBACKS: FeedbackItem[] = [
-  {
-    minAmount: 500000,
-    label: "해외여행급 지출",
-    messages: [
-      "이 회사를 {months}개월 더 다녀야 합니다… 각오하세요!",
-    ],
-  },
-  {
-    minAmount: 300000,
-    label: "큰 지출",
-    messages: [
-      "부장님 얼굴을 {months}개월 더 봐야 합니다…",
-    ],
-  },
-  {
-    minAmount: 100000,
-    label: "중간 지출",
-    messages: [
-      "월요일 아침이 {months}개월 더 찾아옵니다…",
-    ],
-  },
-  {
-    minAmount: 50000,
-    label: "소소한 지출",
-    messages: [
-      "소소하지만… 은퇴가 {months}개월 멀어집니다.",
-    ],
-  },
+// Q2 저축 대비 실시간 T형 코멘트
+export const SAVINGS_COMMENTS: Array<{ threshold: number; message: string }> = [
+  { threshold: 3000000, message: "월 300만 이상? 진짜입니까. 우상향 확정." },
+  { threshold: 1000000, message: "월 100만 이상. 평균은 넘겼습니다." },
+  { threshold: 300000, message: "월 30만... 이 속도면 은퇴가 묘지에서 가능합니다." },
+  { threshold: 0, message: "0원? 지금 당장 고정비를 점검하세요." },
 ];
 
-export const RESIST_CATEGORIES = [
-  "외식/카페", "쇼핑", "구독 서비스", "택시/교통",
-  "술/유흥", "충동구매", "기타",
-] as const;
-
-export const STRESS_SCENARIOS: StressScenario[] = [
-  {
-    id: "income-drop",
-    name: "소득 30% 감소",
-    emoji: "🔻",
-    description: "권고사직, 이직, 연봉 삭감",
-    apply: (p) => ({ ...p, monthlyIncome: p.monthlyIncome * 0.7 }),
-  },
-  {
-    id: "return-drop",
-    name: "투자 수익률 하락",
-    emoji: "📉",
-    description: "장기 침체, 하락장 (6% → 3%)",
-    apply: (p) => ({ ...p, investReturnRate: 0.03 }),
-  },
-  {
-    id: "expense-up",
-    name: "생활비 50만 원 증가",
-    emoji: "🔺",
-    description: "의료비, 부모 부양, 반려동물 등",
-    apply: (p) => ({ ...p, monthlyExpense: p.monthlyExpense + 500000 }),
-  },
-  {
-    id: "target-up",
-    name: "은퇴 목표 자산 상향",
-    emoji: "💎",
-    description: "은퇴 후 더 여유로운 생활 (목표 +5억)",
-    apply: (p) => ({ ...p, targetAssets: p.targetAssets + 500000000 }),
-  },
-  {
-    id: "bonus",
-    name: "보너스 2000만 원",
-    emoji: "🎉",
-    description: "성과급, 부동산 매각 등 일시적 유입",
-    apply: (p) => ({ ...p, currentAssets: p.currentAssets + 20000000 }),
-  },
-  {
-    id: "worst-case",
-    name: "복합 위기",
-    emoji: "🚨",
-    description: "소득↓ + 지출↑ + 수익률↓ 동시 발생",
-    apply: (p) => ({
-      ...p,
-      monthlyIncome: p.monthlyIncome * 0.7,
-      monthlyExpense: p.monthlyExpense + 500000,
-      investReturnRate: 0.03,
-    }),
-  },
+// 분석 로딩 화면 텍스트 시퀀스
+export const ANALYZING_TEXTS = [
+  "3만 가지 파산 시나리오 분석 중...",
+  "월급날과 카드값 비교 분석 중...",
+  "부장님 얼굴 볼 날 수 카운팅 중...",
+  "현실 직시 데이터 컴파일 중...",
+  "퇴사 가능일 시뮬레이션 완료.",
 ];
