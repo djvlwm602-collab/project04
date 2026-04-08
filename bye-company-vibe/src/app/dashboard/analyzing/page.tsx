@@ -43,7 +43,7 @@ export default function AnalyzingPage() {
   }, [status, router]);
 
   useEffect(() => {
-    const totalDuration = 8000;
+    const totalDuration = 5000;
     const interval = totalDuration / STEPS.length;
 
     const timer = setInterval(() => {
@@ -113,7 +113,7 @@ export default function AnalyzingPage() {
           className="h-full rounded-full bg-[#FEE500]"
           initial={{ width: "0%" }}
           animate={{ width: "100%" }}
-          transition={{ duration: 8, ease: "linear" }}
+          transition={{ duration: 5, ease: "linear" }}
         />
       </div>
     </div>

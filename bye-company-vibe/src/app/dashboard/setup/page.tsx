@@ -302,7 +302,7 @@ export default function SetupPage() {
             {/* 질문 텍스트 */}
             <div className="pt-6 pb-2 flex flex-col gap-1">
               <p className="text-[13px] font-bold text-subtext uppercase tracking-widest">{q.title}</p>
-              <h1 className="text-[24px] font-black tracking-tight text-foreground leading-tight">{q.question}</h1>
+              <h1 className="text-[24px] font-bold tracking-tight text-foreground leading-tight">{q.question}</h1>
               <p className="text-[14px] text-subtext leading-relaxed">{q.helperText}</p>
             </div>
 
@@ -310,10 +310,10 @@ export default function SetupPage() {
             {q.unit !== "text" && (
               <div className="flex-1 flex flex-col items-center justify-center gap-1">
                 <div className="flex items-baseline gap-2">
-                  <p className="text-[56px] font-black tabular-nums text-foreground tracking-tight leading-none">
+                  <p className="text-[56px] font-semibold text-foreground tracking-tight leading-none">
                     {formatDisplay(rawInput)}
                   </p>
-                  <p className="text-[22px] font-bold text-foreground">
+                  <p className="text-[22px] font-medium text-foreground">
                     {unitLabel(q.unit)}
                   </p>
                 </div>
@@ -374,7 +374,7 @@ export default function SetupPage() {
               <button
                 key={d}
                 onClick={() => handleDigit(d)}
-                className="flex items-center justify-center rounded-xl bg-gray-100 py-3 text-[20px] font-bold text-foreground active:bg-gray-200 active:scale-95 transition-all"
+                className="flex items-center justify-center rounded-xl bg-gray-100 py-3 text-[20px] font-semibold text-foreground active:bg-gray-200 active:scale-95 transition-all"
               >
                 {d}
               </button>
@@ -382,14 +382,14 @@ export default function SetupPage() {
             {/* C */}
             <button
               onClick={handleClear}
-              className="flex items-center justify-center rounded-xl bg-red-100 py-3 text-[20px] font-bold text-red-500 active:bg-red-200 active:scale-95 transition-all"
+              className="flex items-center justify-center rounded-xl bg-red-100 py-3 text-[20px] font-semibold text-red-500 active:bg-red-200 active:scale-95 transition-all"
             >
               C
             </button>
             {/* 0 */}
             <button
               onClick={() => handleDigit("0")}
-              className="flex items-center justify-center rounded-xl bg-gray-100 py-3 text-[20px] font-bold text-foreground active:bg-gray-200 active:scale-95 transition-all"
+              className="flex items-center justify-center rounded-xl bg-gray-100 py-3 text-[20px] font-semibold text-foreground active:bg-gray-200 active:scale-95 transition-all"
             >
               0
             </button>

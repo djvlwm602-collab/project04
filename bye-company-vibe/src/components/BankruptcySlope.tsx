@@ -67,6 +67,7 @@ export function BankruptcySlope({ data, retirementLabel }: Props) {
           tick={{ fontSize: 10, fill: "#9ca3af" }}
           interval="preserveStartEnd"
           tickLine={false}
+          axisLine={{ stroke: "#e5e7eb" }}
         />
         <YAxis
           tickFormatter={formatAssets}
@@ -90,7 +91,7 @@ export function BankruptcySlope({ data, retirementLabel }: Props) {
         <Line
           type="monotone"
           dataKey="assets"
-          stroke="#9ca3af"
+          stroke="#848c98"
           strokeWidth={2.5}
           dot={<BankruptcyDot />}
           activeDot={{ r: 5 }}

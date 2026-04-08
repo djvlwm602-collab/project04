@@ -30,13 +30,12 @@ export default function DeathNotePage() {
 
   const handleAdd = () => {
     const trimName = name.trim();
-    const trimReason = reason.trim();
-    if (!trimName || !trimReason) return;
+    if (!trimName) return;
 
     const entry: DeathNoteEntry = {
       id: Date.now().toString(),
       name: trimName,
-      reason: trimReason,
+      reason: reason.trim(),
       createdAt: new Date().toISOString(),
     };
     addDeathNoteEntry(entry);
@@ -68,18 +67,19 @@ export default function DeathNotePage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="이름 또는 별명"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-5 text-[24px] font-bold text-red-500 placeholder:text-gray-300 outline-none transition-colors"
+              style={{ fontFamily: "'Gungsuh', '궁서', '궁서체', serif", fontWeight: 900, WebkitTextStroke: '0.6px currentColor' }}
             />
             <input
               type="text"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="이유 (한 줄로)"
+              placeholder="이유 (선택)"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-[14px] text-foreground placeholder:text-gray-300 outline-none transition-colors"
               onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             />
             <button
               onClick={handleAdd}
-              disabled={!name.trim() || !reason.trim()}
+              disabled={!name.trim()}
               className="flex items-center justify-center gap-2 rounded-xl bg-red-500 py-3 text-[14px] font-bold text-white disabled:opacity-40 hover:bg-red-400 active:scale-95 transition-all"
             >
               <Plus size={16} />
@@ -99,8 +99,8 @@ export default function DeathNotePage() {
                   className="flex items-start justify-between rounded-2xl bg-white px-5 py-4 shadow-[0_2px_8px_rgb(0,0,0,0.05)]"
                 >
                   <div>
-                    <p className="text-[16px] font-black text-red-500">{entry.name}</p>
-                    <p className="text-[13px] text-subtext mt-0.5">{entry.reason}</p>
+                    <p className="text-[16px] font-black text-red-500" style={{ fontFamily: "'Gungsuh', '궁서', '궁서체', serif", fontWeight: 900, WebkitTextStroke: '0.6px currentColor' }}>{entry.name}</p>
+                    {entry.reason && <p className="text-[13px] text-subtext mt-0.5">{entry.reason}</p>}
                   </div>
                   <button
                     onClick={() => handleDelete(entry.id)}
