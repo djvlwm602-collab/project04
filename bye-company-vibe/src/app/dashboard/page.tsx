@@ -413,8 +413,8 @@ function DashboardContent() {
             </div>
 
             <div className="flex flex-col items-center gap-1 text-center mt-4">
-              <p className="text-[17px] font-extrabold text-gray-700">자유까지</p>
-              <h2 className="text-[48px] font-black leading-none tracking-tight text-gray-900">
+              <p className="text-[17px] font-bold text-gray-700">자유까지</p>
+              <h2 className="text-[48px] font-bold leading-none tracking-tight text-gray-900">
                 D-{dDay.toLocaleString()}
               </h2>
             </div>

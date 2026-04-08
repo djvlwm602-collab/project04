@@ -1,29 +1,23 @@
 /**
- * 역할: 서버 사이드 인증 보호 — 미인증 사용자의 대시보드 접근 차단
- * 핵심 기능: /dashboard, /stress-test 경로에 인증 필수 적용
+ * 역할: 서버 사이드 인증 보호 — 미인증 사용자의 대시보드/서바이벌 접근 차단
+ * 핵심 기능: 보호 경로에 인증 필수, 루트(/)는 항상 허용
  * 의존: next-auth (auth), next/server
- * Notes: Next.js 16에서 middleware → proxy로 변경됨
+ * Notes: auth 래퍼 패턴 — auth() 직접 호출 시 OAuth 자동 리다이렉트 버그 방지
  */
 
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 
-export async function proxy(request: NextRequest) {
-  const session = await auth();
-
-  const { pathname } = request.nextUrl;
-
-  // 인증이 필요한 경로인데 세션이 없으면 로그인 페이지로 리다이렉트
-  if (!session) {
-    const loginUrl = new URL("/", request.url);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default auth((req: any) => {
+  if (!req.auth) {
+    const loginUrl = new URL("/", req.url);
     return NextResponse.redirect(loginUrl);
   }
-
   return NextResponse.next();
-}
+});
 
 export const config = {
-  // 인증이 필요한 경로만 매칭
-  matcher: ["/dashboard/:path*", "/stress-test/:path*"],
+  // 루트(/)는 매칭에서 제외 — 항상 메인 랜딩 페이지 표시
+  matcher: ["/dashboard/:path*", "/survival/:path*"],
 };

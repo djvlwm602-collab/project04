@@ -13,6 +13,14 @@ import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import type { DeathNoteEntry } from "@/lib/types";
 import { loadDeathNote, addDeathNoteEntry, deleteDeathNoteEntry } from "@/lib/storage";
 
+const NEGATIVE_EMOJIS = ["💀", "👿", "😤", "🤬", "😈", "🔪", "⚰️", "🖤", "😡", "👹"];
+
+// id 기반으로 일관된 이모지 선택 (재렌더링해도 바뀌지 않도록)
+function getEntryEmoji(id: string): string {
+  const sum = id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return NEGATIVE_EMOJIS[sum % NEGATIVE_EMOJIS.length];
+}
+
 export default function DeathNotePage() {
   const router = useRouter();
   const { status } = useSession();
@@ -99,7 +107,7 @@ export default function DeathNotePage() {
                   className="flex items-start justify-between rounded-2xl bg-white px-5 py-4 shadow-[0_2px_8px_rgb(0,0,0,0.05)]"
                 >
                   <div>
-                    <p className="text-[16px] font-black text-red-500" style={{ fontFamily: "'Gungsuh', '궁서', '궁서체', serif", fontWeight: 900, WebkitTextStroke: '0.6px currentColor' }}>{entry.name}</p>
+                    <p className="text-[16px] font-black text-red-500" style={{ fontFamily: "'Gungsuh', '궁서', '궁서체', serif", fontWeight: 900, WebkitTextStroke: '0.6px currentColor' }}>{getEntryEmoji(entry.id)} {entry.name}</p>
                     {entry.reason && <p className="text-[13px] text-subtext mt-0.5">{entry.reason}</p>}
                   </div>
                   <button
