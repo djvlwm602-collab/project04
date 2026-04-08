@@ -5,11 +5,11 @@
  */
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Settings, LogOut, Share2, Skull } from "lucide-react";
+import { Settings, LogOut, Share2, Skull, Smile, Frown, BookOpen, FileText, Sun } from "lucide-react";
 import type { UserProfile } from "@/lib/types";
 import {
   calcDDay, calcMondaysLeft, calcSurvivalDays,
@@ -21,6 +21,35 @@ import { GRADE_META } from "@/lib/constants";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BankruptcySlope } from "@/components/BankruptcySlope";
 import { GradeCard } from "@/components/GradeCard";
+
+// ── 버티기 킷 목록 ───────────────────────────────────────────
+
+const KITS = [
+  {
+    href: "/survival/death-note",
+    icon: BookOpen,
+    iconBg: "bg-red-50",
+    iconColor: "text-red-500",
+    title: "데스노트",
+    desc: "꼴 보기 싫은 상사/동료를 빨간 글씨로 기록",
+  },
+  {
+    href: "/survival/resignation",
+    icon: FileText,
+    iconBg: "bg-blue-50",
+    iconColor: "text-blue-500",
+    title: "사직서 미리 쓰기",
+    desc: "가슴속 품고 다니는 사직서, 솔직하게 작성",
+  },
+  {
+    href: "/survival/routine",
+    icon: Sun,
+    iconBg: "bg-amber-50",
+    iconColor: "text-amber-500",
+    title: "은퇴 후 일과",
+    desc: "시간 단위로 작성 + 원형 일과표 시각화",
+  },
+];
 
 // ── 실시간 카운트다운 훅 ────────────────────────────────────
 
@@ -98,34 +127,46 @@ function SettingsSheet({
 
   const fields: Array<{
     key: keyof UserProfile;
+    order: string;
     label: string;
     unit: string;
     isPercent?: boolean;
     isText?: boolean;
+    isManwon?: boolean;
   }> = [
-    { key: "liquidAssets", label: "탈출 자금", unit: "원" },
-    { key: "monthlySavings", label: "월 저축", unit: "원" },
-    { key: "investReturnRate", label: "수익률", unit: "%", isPercent: true },
-    { key: "retirementYears", label: "은퇴까지", unit: "년" },
-    { key: "monthlyExpense", label: "은퇴 후 생활비", unit: "원" },
-    { key: "retirementPlan", label: "사후 대책", unit: "", isText: true },
+    { key: "liquidAssets", order: "Q1", label: "탈출 자금", unit: "만원", isManwon: true },
+    { key: "monthlySavings", order: "Q2", label: "월 저축", unit: "만원", isManwon: true },
+    { key: "investReturnRate", order: "Q3", label: "수익률", unit: "%", isPercent: true },
+    { key: "retirementYears", order: "Q4", label: "은퇴까지", unit: "년" },
+    { key: "monthlyExpense", order: "Q5", label: "은퇴 후 생활비", unit: "만원", isManwon: true },
+    { key: "retirementPlan", order: "Q6", label: "사후 대책", unit: "", isText: true },
   ];
 
-  const displayVal = (key: keyof UserProfile, isPercent?: boolean, isText?: boolean): string => {
+  // 천 단위 쉼표 포맷
+  const formatComma = (n: number) => n.toLocaleString("ko-KR");
+
+  const displayVal = (key: keyof UserProfile, isPercent?: boolean, isText?: boolean, isManwon?: boolean): string => {
     const v = draft[key];
     if (isText) return v as string;
     if (isPercent) {
       const pct = (v as number) * 100;
       return String(pct % 1 === 0 ? pct : parseFloat(pct.toFixed(1)));
     }
-    return String(v as number);
+    const num = v as number;
+    if (num === 0) return "";
+    // 만원 단위: 내부값(원) ÷ 10,000 후 쉼표 포맷
+    if (isManwon) return formatComma(num / 10000);
+    return formatComma(num);
   };
 
-  const handleChange = (key: keyof UserProfile, val: string, isPercent?: boolean, isText?: boolean) => {
+  const handleChange = (key: keyof UserProfile, val: string, isPercent?: boolean, isText?: boolean, isManwon?: boolean) => {
     if (isText) { setDraft((p) => ({ ...p, [key]: val })); return; }
-    const parsed = parseFloat(val);
+    // 쉼표 제거 후 파싱
+    const stripped = val.replace(/,/g, "");
+    const parsed = parseFloat(stripped);
     if (isNaN(parsed)) return;
-    const internal = isPercent ? parsed / 100 : parsed;
+    // 만원 단위: 입력값 × 10,000으로 원 단위 저장
+    const internal = isPercent ? parsed / 100 : isManwon ? parsed * 10000 : parsed;
     setDraft((p) => ({ ...p, [key]: internal }));
   };
 
@@ -156,17 +197,20 @@ function SettingsSheet({
         </div>
         <div className="overflow-y-auto px-6 pb-8" style={{ maxHeight: "calc(90vh - 160px)" }}>
           <div className="flex flex-col gap-4 pt-4">
-            {fields.map(({ key, label, unit, isPercent, isText }) => (
-              <div key={key} className="flex flex-col gap-1.5">
-                <label className="text-[13px] font-bold text-foreground">{label}</label>
-                <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 focus-within:border-[#FEE500] transition-all">
+            {fields.map(({ key, order, label, unit, isPercent, isText, isManwon }) => (
+              <div key={key} className="flex items-center gap-3">
+                <label className="w-28 shrink-0">
+                  <span className="text-[17px] font-bold text-foreground">{label}</span>
+                </label>
+                <div className="flex flex-1 items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-5 py-4 focus-within:border-[#FEE500] transition-all">
                   <input
-                    type={isText ? "text" : "number"}
-                    value={displayVal(key, isPercent, isText)}
-                    onChange={(e) => handleChange(key, e.target.value, isPercent, isText)}
-                    className="flex-1 bg-transparent text-[16px] font-bold text-foreground outline-none"
+                    type="text"
+                    inputMode={isText ? "text" : "numeric"}
+                    value={displayVal(key, isPercent, isText, isManwon)}
+                    onChange={(e) => handleChange(key, e.target.value, isPercent, isText, isManwon)}
+                    className="flex-1 bg-transparent text-[20px] font-bold text-foreground outline-none text-right"
                   />
-                  {unit && <span className="text-[13px] font-bold text-subtext">{unit}</span>}
+                  {unit && <span className="text-[16px] font-bold text-subtext shrink-0">{unit}</span>}
                 </div>
               </div>
             ))}
@@ -185,9 +229,9 @@ function SettingsSheet({
   );
 }
 
-// ── 대시보드 메인 ───────────────────────────────────────────
+// ── 대시보드 메인 콘텐츠 ───────────────────────────────────────────
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
@@ -197,6 +241,7 @@ export default function DashboardPage() {
   const [showGradeCard, setShowGradeCard] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [activeTab, setActiveTab] = useState<"plan" | "survive">("plan");
 
   useEffect(() => {
     if (status === "unauthenticated") router.replace("/");
@@ -240,27 +285,28 @@ export default function DashboardPage() {
       {showConfetti && <ConfettiExplosion />}
 
       {/* 헤더 */}
-      <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm">
+      <header className="flex h-16 items-center justify-between px-6">
         <h1 className="text-lg font-extrabold tracking-tight">은퇴 계산기</h1>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
             onClick={() => setShowSettings(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext hover:bg-gray-100 transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext hover:bg-gray-200 transition-colors"
           >
             <Settings size={20} />
           </button>
           <button
             onClick={() => { clearUserData(); signOut({ callbackUrl: "/" }); }}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext hover:bg-gray-100 transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext hover:bg-gray-200 transition-colors"
           >
             <LogOut size={20} />
           </button>
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col items-center p-5 sm:p-8 gap-4">
-        <div className="w-full max-w-md space-y-4">
+      <main className="flex flex-1 flex-col items-center p-5 sm:p-8 gap-4 pb-28">
+        {/* ── 은퇴 계획 탭 ──────────────────────────────────── */}
+        {activeTab === "plan" && <div className="w-full max-w-md space-y-4">
 
           {/* ── D-Day 메인 카드 ────────────────────────────── */}
           <div className="rounded-[24px] bg-white px-6 py-8 shadow-[0_2px_20px_rgb(0,0,0,0.06)] flex flex-col items-center gap-4">
@@ -330,25 +376,63 @@ export default function DashboardPage() {
             <BankruptcySlope data={slopeData} retirementLabel="은퇴" />
           </div>
 
-          {/* ── 오피스 서바이벌 킷 ───────────────────────────── */}
-          <button
-            onClick={() => router.push("/survival")}
-            className="flex w-full items-center justify-between rounded-2xl bg-white px-5 py-4 shadow-[0_2px_12px_rgb(0,0,0,0.05)] hover:bg-gray-50 active:bg-gray-100 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50">
-                <Skull size={18} className="text-red-500" />
-              </div>
-              <div className="text-left">
-                <p className="text-[15px] font-bold text-foreground">오피스 서바이벌 킷</p>
-                <p className="text-[12px] text-gray-400">데스노트 · 사직서 · 은퇴 후 일과</p>
-              </div>
-            </div>
-            <span className="text-[13px] font-bold text-gray-300">›</span>
-          </button>
+        </div>}
 
-        </div>
+        {/* ── 버티기 탭 ─────────────────────────────────────── */}
+        {activeTab === "survive" && (
+          <div className="w-full max-w-md flex flex-col gap-3 mt-2">
+            <p className="text-[13px] font-bold text-subtext text-center py-2">
+              퇴사 전까지 버티기 위한 비밀 무기들
+            </p>
+            {KITS.map((kit, i) => (
+              <motion.button
+                key={kit.href}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08 }}
+                onClick={() => router.push(kit.href)}
+                className="flex w-full items-center gap-4 rounded-2xl bg-white px-5 py-5 shadow-[0_2px_12px_rgb(0,0,0,0.05)] hover:bg-gray-50 active:scale-[0.98] transition-all text-left"
+              >
+                <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${kit.iconBg}`}>
+                  <kit.icon size={22} className={kit.iconColor} />
+                </div>
+                <div>
+                  <p className="text-[16px] font-extrabold text-foreground">{kit.title}</p>
+                  <p className="text-[12px] text-subtext mt-0.5">{kit.desc}</p>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        )}
       </main>
+
+      {/* ── 하단 탭 바 — iOS 26 글래스모피즘 ──────────────── */}
+      <div className="fixed bottom-6 left-0 right-0 z-30 flex justify-center pointer-events-none">
+        <div className="flex gap-1 rounded-full bg-white/65 backdrop-blur-2xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.12)] px-0.5 py-0.5 pointer-events-auto">
+          <button
+            onClick={() => setActiveTab("plan")}
+            className={`flex items-center gap-2 rounded-full px-6 py-3.5 text-[14px] font-semibold transition-all duration-200 ${
+              activeTab === "plan"
+                ? "bg-gray-100 text-foreground"
+                : "text-subtext hover:text-foreground"
+            }`}
+          >
+            <Smile size={17} />
+            은퇴 계획
+          </button>
+          <button
+            onClick={() => setActiveTab("survive")}
+            className={`flex items-center gap-2 rounded-full px-6 py-3.5 text-[14px] font-semibold transition-all duration-200 ${
+              activeTab === "survive"
+                ? "bg-gray-100 text-foreground"
+                : "text-subtext hover:text-foreground"
+            }`}
+          >
+            <Frown size={17} />
+            버티기
+          </button>
+        </div>
+      </div>
 
       {/* 등급 진단서 모달 */}
       <AnimatePresence>
@@ -399,5 +483,15 @@ export default function DashboardPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+// ── Export용 페이지 컴포넌트 ───────────────────────────────────────────
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-background"><div className="h-10 w-10 animate-spin rounded-full border-4 border-[#FEE500] border-t-transparent" /></div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }

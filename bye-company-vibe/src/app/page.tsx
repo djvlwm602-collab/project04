@@ -38,17 +38,17 @@ export default function LandingPage() {
 
   if (status === "loading") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a]">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#FEE500] border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] p-6">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background p-6">
       {/* 배경 그라데이션 효과 */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/3 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FEE500]/5 blur-3xl" />
+        <div className="absolute left-1/2 top-1/3 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FEE500]/20 blur-3xl" />
       </div>
 
       <motion.div
@@ -63,7 +63,7 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="text-[13px] font-bold uppercase tracking-[0.2em] text-[#FEE500]/60"
+            className="text-[13px] font-bold uppercase tracking-[0.2em] text-gray-400"
           >
             은퇴 서바이벌 계산기
           </motion.p>
@@ -72,10 +72,11 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.7 }}
-            className="text-[38px] font-black leading-tight tracking-tight text-white"
+            className="text-[38px] font-black leading-tight tracking-tight text-foreground"
           >
             오늘도<br />
-            <span className="text-[#FEE500]">견디는</span><br />
+            {/* 라이트 배경에서 노란색 가독성을 위해 카카오 브라운 사용 */}
+            <span className="text-[#3C1E1E] bg-[#FEE500] px-2 rounded-lg">견디는</span><br />
             당신에게
           </motion.h1>
 
@@ -83,7 +84,7 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.6 }}
-            className="text-[15px] font-medium leading-relaxed text-white/40"
+            className="text-[15px] font-medium leading-relaxed text-subtext"
           >
             ㅅㅂ.. 언제 탈출할 수 있을까?<br />
             당신의 비밀 탈출 시나리오를 계산합니다.
@@ -115,7 +116,7 @@ export default function LandingPage() {
           <button
             onClick={() => handleLogin("google")}
             disabled={loadingProvider !== null}
-            className="flex w-full items-center justify-center gap-2.5 rounded-[18px] bg-white/10 py-4 text-[16px] font-bold text-white backdrop-blur-sm transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2.5 rounded-[18px] bg-white border border-gray-200 py-4 text-[16px] font-bold text-foreground shadow-sm transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-60"
           >
             {loadingProvider === "google" ? (
               <Loader2 size={20} className="animate-spin" />
@@ -135,10 +136,10 @@ export default function LandingPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.3, duration: 0.5 }}
-          className="text-[12px] text-white/30 text-center"
+          className="text-[12px] text-gray-400 text-center"
         >
           아직 계정이 없으신가요?{" "}
-          <Link href="/signup" className="text-[#FEE500]/60 underline underline-offset-2 hover:text-[#FEE500]">
+          <Link href="/signup" className="text-gray-500 underline underline-offset-2 hover:text-foreground">
             회원가입
           </Link>
         </motion.p>

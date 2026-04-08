@@ -21,6 +21,7 @@ interface Question {
   key: keyof UserProfile;
   order: string;
   title: string;
+  question: string;
   helperText: string;
   unit: string;
   inputType: "number" | "text";
@@ -33,24 +34,27 @@ const QUESTIONS: Question[] = [
     key: "liquidAssets",
     order: "Q1",
     title: "탈출 자금",
+    question: "현재 즉시 동원 가능한 현금은?",
     helperText: "대출·부동산 제외, 내일 당장 인출 가능한 액수만.",
-    unit: "원",
+    unit: "만원",
     inputType: "number",
-    placeholder: "50000000",
+    placeholder: "5000",
   },
   {
     key: "monthlySavings",
     order: "Q2",
     title: "연료 보급",
+    question: "매달 '순수하게' 저축하는 금액은?",
     helperText: "시발비용·고정비 다 빼고, 오직 은퇴용으로 킵하는 돈.",
-    unit: "원",
+    unit: "만원",
     inputType: "number",
-    placeholder: "1000000",
+    placeholder: "100",
   },
   {
     key: "investReturnRate",
     order: "Q3",
     title: "운용 능력",
+    question: "당신의 연간 예상 수익률은?",
     helperText: "희망 회로 말고, 당신의 계좌가 증명하는 '진짜' 실력.",
     unit: "%",
     inputType: "number",
@@ -61,6 +65,7 @@ const QUESTIONS: Question[] = [
     key: "retirementYears",
     order: "Q4",
     title: "종료 시점",
+    question: "몇 살에 이 지옥을 탈출할 겁니까?",
     helperText: "남들 다 하는 60세 정년 말고, 스스로 선언하는 카운트다운.",
     unit: "년",
     inputType: "number",
@@ -70,15 +75,17 @@ const QUESTIONS: Question[] = [
     key: "monthlyExpense",
     order: "Q5",
     title: "유지 비용",
+    question: "은퇴 후 최소 월 생활비는?",
     helperText: "숨만 쉬어도 나가는 돈. 물가 상승률 무시하지 마세요.",
-    unit: "원",
+    unit: "만원",
     inputType: "number",
-    placeholder: "2000000",
+    placeholder: "200",
   },
   {
     key: "retirementPlan",
     order: "Q6",
     title: "사후 대책",
+    question: "퇴사 후 당신의 가치는 무엇입니까?",
     helperText: "노는 거 말고, 잉여 시간을 채울 진짜 계획 한 줄.",
     unit: "",
     inputType: "text",
@@ -88,6 +95,11 @@ const QUESTIONS: Question[] = [
 
 // ── 유틸 ─────────────────────────────────────────────────────
 
+// 숫자에 천 단위 쉼표 포맷 (퍼센트·텍스트 제외)
+function formatComma(val: number): string {
+  return val.toLocaleString("ko-KR");
+}
+
 function getDisplayValue(profile: UserProfile, q: Question): string {
   const raw = profile[q.key];
   if (q.inputType === "text") return String(raw);
@@ -95,14 +107,22 @@ function getDisplayValue(profile: UserProfile, q: Question): string {
     const pct = (raw as number) * 100;
     return pct === 0 ? "" : String(pct % 1 === 0 ? pct : parseFloat(pct.toFixed(1)));
   }
-  return (raw as number) === 0 ? "" : String(raw as number);
+  const num = raw as number;
+  if (num === 0) return "";
+  // 만원 단위: 내부 저장값(원) ÷ 10,000 후 표시
+  return q.unit === "만원" ? formatComma(num / 10000) : formatComma(num);
 }
 
 function parseInput(q: Question, raw: string): number | string {
   if (q.inputType === "text") return raw;
-  const parsed = parseFloat(raw);
+  // 쉼표 제거 후 파싱
+  const stripped = raw.replace(/,/g, "");
+  const parsed = parseFloat(stripped);
   if (isNaN(parsed)) return 0;
-  return q.isPercent ? parsed / 100 : parsed;
+  if (q.isPercent) return parsed / 100;
+  // 만원 단위: 입력값 × 10,000으로 원 단위 내부 저장
+  if (q.unit === "만원") return parsed * 10000;
+  return parsed;
 }
 
 // ── 메인 컴포넌트 ────────────────────────────────────────────
@@ -130,21 +150,33 @@ export default function SetupPage() {
   const isLast = step === QUESTIONS.length - 1;
 
   const liveMessage = (() => {
+    // profile에 저장된 실수값 기준으로 메시지 계산 (inputValue에 쉼표가 있어 직접 파싱 불가)
     if (q.key === "investReturnRate") {
-      const rate = parseFloat(inputValue) / 100;
-      return getReturnRateWarning(isNaN(rate) ? 0 : rate);
+      return getReturnRateWarning(profile.investReturnRate ?? 0);
     }
     if (q.key === "monthlySavings") {
-      const amount = parseFloat(inputValue);
-      return getSavingsComment(isNaN(amount) ? 0 : amount);
+      return getSavingsComment(profile.monthlySavings ?? 0);
     }
     return null;
   })();
 
   const handleChange = (val: string) => {
-    setInputValue(val);
     const parsed = parseInput(q, val);
     setProfile((prev) => ({ ...prev, [q.key]: parsed }));
+    // 숫자 입력은 쉼표 포맷으로 표시, 퍼센트·텍스트는 그대로
+    if (q.inputType === "number" && !q.isPercent) {
+      const num = typeof parsed === "number" ? parsed : 0;
+      if (num === 0) {
+        setInputValue("");
+      } else if (q.unit === "만원") {
+        // 내부값(원)을 다시 만원으로 나눠서 표시
+        setInputValue(formatComma(num / 10000));
+      } else {
+        setInputValue(formatComma(num));
+      }
+    } else {
+      setInputValue(val);
+    }
   };
 
   const handleNext = () => {
@@ -214,9 +246,11 @@ export default function SetupPage() {
           >
             {/* 질문 헤더 */}
             <div className="flex flex-col gap-2">
-              <p className="text-[12px] font-bold tracking-widest text-subtext uppercase">{q.order}</p>
-              <h1 className="text-[28px] font-black tracking-tight text-foreground">{q.title}</h1>
-              <p className="text-[14px] text-subtext leading-relaxed">{q.helperText}</p>
+              <p className="text-[14px] font-bold tracking-widest text-subtext uppercase">
+                {q.order}&nbsp;&nbsp;{q.title}
+              </p>
+              <h1 className="text-[28px] font-black tracking-tight text-foreground leading-tight">{q.question}</h1>
+              <p className="text-[16px] font-medium text-subtext leading-relaxed">{q.helperText}</p>
             </div>
 
             {/* 입력 영역 */}
@@ -224,11 +258,11 @@ export default function SetupPage() {
               <div className="flex items-center gap-3 rounded-2xl border-2 border-gray-200 bg-background px-5 py-4 focus-within:border-[#FEE500] transition-colors">
                 {q.inputType === "number" ? (
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     value={inputValue}
                     onChange={(e) => handleChange(e.target.value)}
                     placeholder={q.placeholder}
-                    min={0}
                     className="flex-1 bg-transparent text-[22px] font-black text-foreground outline-none tabular-nums"
                     autoFocus
                   />
@@ -254,7 +288,7 @@ export default function SetupPage() {
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
-                    className="text-[13px] font-bold text-amber-600 bg-amber-50 rounded-xl px-4 py-2.5"
+                    className="text-[13px] font-bold text-amber-600"
                   >
                     {liveMessage}
                   </motion.p>
