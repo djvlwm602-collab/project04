@@ -11,7 +11,6 @@ import { Loader2 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { isSetupDone, isSignupDone } from "@/lib/storage";
-import Link from "next/link";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -46,11 +45,6 @@ export default function LandingPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background p-6">
-      {/* 배경 그라데이션 효과 */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/3 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FEE500]/20 blur-3xl" />
-      </div>
-
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -59,24 +53,14 @@ export default function LandingPage() {
       >
         {/* 메인 카피 */}
         <div className="flex flex-col items-center gap-4 text-center">
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="text-[13px] font-bold uppercase tracking-[0.2em] text-gray-400"
-          >
-            은퇴 서바이벌 계산기
-          </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.7 }}
-            className="text-[38px] font-black leading-tight tracking-tight text-foreground"
+            className="text-[38px] font-black leading-tight tracking-tight text-black"
           >
             오늘도<br />
-            {/* 라이트 배경에서 노란색 가독성을 위해 카카오 브라운 사용 */}
-            <span className="text-[#3C1E1E] bg-[#FEE500] px-2 rounded-lg">견디는</span><br />
+            견디는<br />
             당신에게
           </motion.h1>
 
@@ -87,7 +71,7 @@ export default function LandingPage() {
             className="text-[15px] font-medium leading-relaxed text-subtext"
           >
             ㅅㅂ.. 언제 탈출할 수 있을까?<br />
-            당신의 비밀 탈출 시나리오를 계산합니다.
+            당신의 은퇴시점을 계산해드립니다.
           </motion.p>
         </div>
 
@@ -132,17 +116,6 @@ export default function LandingPage() {
           </button>
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.3, duration: 0.5 }}
-          className="text-[12px] text-gray-400 text-center"
-        >
-          아직 계정이 없으신가요?{" "}
-          <Link href="/signup" className="text-gray-500 underline underline-offset-2 hover:text-foreground">
-            회원가입
-          </Link>
-        </motion.p>
       </motion.div>
     </div>
   );

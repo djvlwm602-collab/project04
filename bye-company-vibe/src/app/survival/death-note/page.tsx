@@ -51,36 +51,36 @@ export default function DeathNotePage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0a0a0a]">
-      <header className="flex h-16 items-center gap-3 border-b border-white/10 px-6">
-        <button onClick={() => router.back()} className="text-white/50 hover:text-white transition-colors">
+    <div className="flex min-h-screen flex-col bg-[#F5F5F7]">
+      <header className="flex h-16 items-center gap-3 px-6">
+        <button onClick={() => router.back()} className="text-subtext hover:text-foreground transition-colors">
           <ArrowLeft size={22} />
         </button>
-        <h1 className="text-lg font-extrabold text-white">📓 데스노트</h1>
+        <h1 className="text-lg font-extrabold text-foreground">📓 데스노트</h1>
       </header>
 
       <main className="flex flex-1 flex-col items-center p-5">
         <div className="w-full max-w-md flex flex-col gap-5">
-          <div className="flex flex-col gap-3 rounded-2xl border border-white/10 p-5">
+          <div className="flex flex-col gap-3 rounded-2xl bg-white p-5 shadow-[0_2px_12px_rgb(0,0,0,0.05)]">
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="이름 또는 별명"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[16px] font-bold text-red-400 placeholder:text-white/20 outline-none focus:border-red-500/50"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-5 text-[24px] font-bold text-red-500 placeholder:text-gray-300 outline-none transition-colors"
             />
             <input
               type="text"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="이유 (한 줄로)"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[14px] text-white/70 placeholder:text-white/20 outline-none focus:border-red-500/50"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-[14px] text-foreground placeholder:text-gray-300 outline-none transition-colors"
               onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             />
             <button
               onClick={handleAdd}
               disabled={!name.trim() || !reason.trim()}
-              className="flex items-center justify-center gap-2 rounded-xl bg-red-600 py-3 text-[14px] font-bold text-white disabled:opacity-40 hover:bg-red-500 active:scale-95 transition-all"
+              className="flex items-center justify-center gap-2 rounded-xl bg-red-500 py-3 text-[14px] font-bold text-white disabled:opacity-40 hover:bg-red-400 active:scale-95 transition-all"
             >
               <Plus size={16} />
               기록하기
@@ -96,15 +96,15 @@ export default function DeathNotePage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ delay: i * 0.05 }}
-                  className="flex items-start justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4"
+                  className="flex items-start justify-between rounded-2xl bg-white px-5 py-4 shadow-[0_2px_8px_rgb(0,0,0,0.05)]"
                 >
                   <div>
-                    <p className="text-[16px] font-black text-red-400">{entry.name}</p>
-                    <p className="text-[13px] text-white/50 mt-0.5">{entry.reason}</p>
+                    <p className="text-[16px] font-black text-red-500">{entry.name}</p>
+                    <p className="text-[13px] text-subtext mt-0.5">{entry.reason}</p>
                   </div>
                   <button
                     onClick={() => handleDelete(entry.id)}
-                    className="text-white/20 hover:text-red-400 transition-colors mt-0.5"
+                    className="text-gray-300 hover:text-red-400 transition-colors mt-0.5"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -112,8 +112,8 @@ export default function DeathNotePage() {
               ))}
             </AnimatePresence>
             {entries.length === 0 && (
-              <p className="text-center text-[13px] text-white/30 py-8">
-                아직 아무도 없네요. 정말요?
+              <p className="text-center text-[13px] text-subtext py-8">
+                에헤이~ 정말 아무도 없다고?
               </p>
             )}
           </div>

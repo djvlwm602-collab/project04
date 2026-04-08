@@ -45,6 +45,7 @@ export interface RoutineItem {
   durationHours: number; // 1~24
   activity: string;      // 활동명
   color: string;         // hex 색상
+  emoji?: string;        // 자동 배정 이모지
 }
 
 export interface UserNickname {

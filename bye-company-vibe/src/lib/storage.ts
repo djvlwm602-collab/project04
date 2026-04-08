@@ -140,11 +140,17 @@ export function saveRoutine(items: RoutineItem[]): void {
   localStorage.setItem(ROUTINE_KEY, JSON.stringify(items));
 }
 
-// ── 로그아웃 시 초기화 ───────────────────────────────────────
-// 프로필/설정 완료 여부는 유지 — 재로그인 시 대시보드로 바로 이동
+// ── 회원탈퇴 시 전체 초기화 ─────────────────────────────────
+// 일반 로그아웃은 localStorage를 건드리지 않음 (재로그인 시 대시보드 직행)
+// 회원탈퇴만 모든 데이터를 삭제해 다음 로그인 시 처음부터 시작
 
 export function clearUserData(): void {
   if (typeof window === "undefined") return;
+  localStorage.removeItem(PROFILE_KEY);
+  localStorage.removeItem(SETUP_DONE_KEY);
   localStorage.removeItem(NICKNAME_KEY);
   localStorage.removeItem(SIGNUP_DONE_KEY);
+  localStorage.removeItem(DEATH_NOTE_KEY);
+  localStorage.removeItem(RESIGNATION_KEY);
+  localStorage.removeItem(ROUTINE_KEY);
 }

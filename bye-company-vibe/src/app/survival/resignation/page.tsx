@@ -56,7 +56,7 @@ export default function ResignationPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fafaf8]">
-      <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm">
+      <header className="flex h-16 items-center justify-between px-6">
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()} className="text-subtext hover:text-foreground transition-colors">
             <ArrowLeft size={22} />

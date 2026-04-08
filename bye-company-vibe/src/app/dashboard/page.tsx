@@ -229,6 +229,60 @@ function SettingsSheet({
   );
 }
 
+// ── 마키 ticker 컴포넌트 ────────────────────────────────────────────
+
+const SLAVE_INDEX: Record<string, string> = {
+  S: "해방 임박",
+  A: "낮음",
+  B: "보통",
+  C: "높음",
+  D: "매우 높음",
+};
+
+function MarqueeTicker({
+  mondays, survivalDays, retirementAssets, grade,
+}: {
+  mondays: number;
+  survivalDays: number;
+  retirementAssets: number;
+  grade: string;
+}) {
+  const items = [
+    { emoji: "📅", label: "남은 월요일", value: `${mondays.toLocaleString()}회` },
+    { emoji: "💀", label: "현재 자산 생존 가능 기간", value: `${survivalDays.toLocaleString()}일` },
+    { emoji: "💰", label: "은퇴 시점 예상 자산", value: `${retirementAssets}억원` },
+    { emoji: "⛓️", label: "현재 노예 지수", value: SLAVE_INDEX[grade] ?? "높음" },
+  ];
+
+  // 끊김 없는 루프를 위해 3벌 복사
+  const repeated = [...items, ...items, ...items];
+
+  return (
+    <>
+      <style>{`
+        @keyframes ticker {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-33.333%); }
+        }
+        .ticker-track { animation: ticker 22s linear infinite; }
+      `}</style>
+      <div className="w-full overflow-hidden rounded-xl bg-white shadow-[0_2px_16px_rgb(0,0,0,0.08)] py-5">
+          <div className="ticker-track flex w-max">
+            {repeated.map((item, i) => (
+              <span key={i} className="flex items-center whitespace-nowrap px-4 text-[13px]">
+                <span className="mr-1.5">{item.emoji}</span>
+                <span className="font-bold text-black">{item.label}</span>
+                <span className="mx-1.5 text-gray-300">·</span>
+                <span className="font-bold text-[#d97706]">{item.value}</span>
+                <span className="ml-6" />
+              </span>
+            ))}
+          </div>
+        </div>
+    </>
+  );
+}
+
 // ── 대시보드 메인 콘텐츠 ───────────────────────────────────────────
 
 function DashboardContent() {
@@ -242,6 +296,7 @@ function DashboardContent() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeTab, setActiveTab] = useState<"plan" | "survive">("plan");
+  const [showLogoutSheet, setShowLogoutSheet] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") router.replace("/");
@@ -286,7 +341,10 @@ function DashboardContent() {
 
       {/* 헤더 */}
       <header className="flex h-16 items-center justify-between px-6">
-        <h1 className="text-lg font-extrabold tracking-tight">은퇴 계산기</h1>
+        <h1 className="flex items-center gap-1.5 text-lg font-extrabold tracking-tight">
+          {activeTab === "plan" ? <Smile size={18} /> : <Frown size={18} />}
+          {activeTab === "plan" ? "은퇴계산기" : "버티기"}
+        </h1>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
@@ -295,12 +353,39 @@ function DashboardContent() {
           >
             <Settings size={20} />
           </button>
-          <button
-            onClick={() => { clearUserData(); signOut({ callbackUrl: "/" }); }}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-subtext hover:bg-gray-200 transition-colors"
-          >
-            <LogOut size={20} />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowLogoutSheet((v) => !v)}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-subtext hover:bg-gray-200 transition-colors"
+            >
+              <LogOut size={20} />
+            </button>
+            <AnimatePresence>
+              {showLogoutSheet && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.92, y: -6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.92, y: -6 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  className="absolute right-0 top-11 z-50 w-40 rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden"
+                >
+                  <button
+                    onClick={() => { setShowLogoutSheet(false); signOut({ callbackUrl: "/" }); }}
+                    className="w-full px-4 py-3.5 text-left text-[14px] font-bold text-foreground hover:bg-gray-50 transition-colors"
+                  >
+                    로그아웃
+                  </button>
+                  <div className="h-px bg-gray-100" />
+                  <button
+                    onClick={() => { setShowLogoutSheet(false); clearUserData(); signOut({ callbackUrl: "/" }); }}
+                    className="w-full px-4 py-3.5 text-left text-[14px] font-bold text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    회원탈퇴
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </header>
 
@@ -319,59 +404,42 @@ function DashboardContent() {
                 { v: countdown.seconds, l: "초" },
               ].map(({ v, l }) => (
                 <div key={l} className="flex items-baseline gap-0.5">
-                  <span className="inline-block min-w-[2.2ch] rounded-lg bg-gray-100 px-2 py-1.5 text-center text-[18px] font-black tabular-nums text-gray-700">
+                  <span className="inline-block min-w-[2.2ch] rounded-lg bg-gray-100 px-2 py-1.5 text-center text-[16px] font-bold tabular-nums text-gray-500">
                     {String(v).padStart(2, "0")}
                   </span>
-                  <span className="text-[11px] font-bold text-gray-400">{l}</span>
+                  <span className="text-[11px] font-bold text-gray-500">{l}</span>
                 </div>
               ))}
             </div>
 
-            <div className="flex flex-col items-center gap-1 text-center">
-              <p className="text-[13px] font-bold text-gray-400">자유까지</p>
+            <div className="flex flex-col items-center gap-1 text-center mt-4">
+              <p className="text-[17px] font-extrabold text-gray-700">자유까지</p>
               <h2 className="text-[48px] font-black leading-none tracking-tight text-gray-900">
                 D-{dDay.toLocaleString()}
               </h2>
-              <p className="text-[18px] font-extrabold text-gray-600">{retirementDate}</p>
             </div>
 
-            {/* 등급 뱃지 */}
+            {/* 결과 공유 버튼 */}
             <button
               onClick={() => setShowGradeCard(true)}
-              className={`flex items-center gap-2 rounded-full px-5 py-2 ${gradeMeta.bg} transition-all hover:scale-[1.02] active:scale-95`}
+              className="flex w-full items-center justify-center rounded-2xl bg-[#FEE500] py-4 text-[15px] font-bold text-[#3C1E1E] hover:scale-[1.01] active:scale-95 transition-all mt-4"
             >
-              <span className={`text-[22px] font-black ${gradeMeta.color}`}>{grade}등급</span>
-              <span className={`text-[12px] font-bold ${gradeMeta.color} opacity-70`}>{gradeMeta.label}</span>
-              <Share2 size={14} className={gradeMeta.color} />
+              결과 공유하기
             </button>
           </div>
 
-          {/* ── 팩트 카드 3종 ───────────────────────────────── */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-2xl bg-white p-4 shadow-[0_2px_12px_rgb(0,0,0,0.05)] text-center">
-              <p className="text-[11px] font-bold text-gray-400 mb-1">남은 월요일</p>
-              <p className="text-[20px] font-black text-gray-800">{mondays.toLocaleString()}</p>
-              <p className="text-[10px] text-gray-400">번</p>
-            </div>
-            <div className="rounded-2xl bg-white p-4 shadow-[0_2px_12px_rgb(0,0,0,0.05)] text-center">
-              <p className="text-[11px] font-bold text-gray-400 mb-1">지금 자산으로</p>
-              <p className="text-[20px] font-black text-gray-800">{survivalDays.toLocaleString()}</p>
-              <p className="text-[10px] text-gray-400">일 버팀</p>
-            </div>
-            <div className="rounded-2xl bg-white p-4 shadow-[0_2px_12px_rgb(0,0,0,0.05)] text-center">
-              <p className="text-[11px] font-bold text-gray-400 mb-1">은퇴 시 자산</p>
-              <p className="text-[20px] font-black text-gray-800">{retirementAssets}</p>
-              <p className="text-[10px] text-gray-400">억원</p>
-            </div>
-          </div>
+          {/* ── 마키 ticker ─────────────────────────────────── */}
+          <MarqueeTicker
+            mondays={mondays}
+            survivalDays={survivalDays}
+            retirementAssets={retirementAssets}
+            grade={grade}
+          />
 
           {/* ── 파산 슬로프 ─────────────────────────────────── */}
           <div className="rounded-[24px] bg-white px-5 py-5 shadow-[0_2px_20px_rgb(0,0,0,0.06)]">
-            <div className="flex items-center justify-between mb-3">
+            <div className="mb-3">
               <h3 className="text-[15px] font-extrabold text-gray-800">파산 슬로프</h3>
-              <span className="text-[11px] font-bold text-red-400 bg-red-50 rounded-full px-2.5 py-1">
-                🔴 파산 시점
-              </span>
             </div>
             <BankruptcySlope data={slopeData} retirementLabel="은퇴" />
           </div>
@@ -381,17 +449,11 @@ function DashboardContent() {
         {/* ── 버티기 탭 ─────────────────────────────────────── */}
         {activeTab === "survive" && (
           <div className="w-full max-w-md flex flex-col gap-3 mt-2">
-            <p className="text-[13px] font-bold text-subtext text-center py-2">
-              퇴사 전까지 버티기 위한 비밀 무기들
-            </p>
-            {KITS.map((kit, i) => (
-              <motion.button
+            {KITS.map((kit) => (
+              <button
                 key={kit.href}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
                 onClick={() => router.push(kit.href)}
-                className="flex w-full items-center gap-4 rounded-2xl bg-white px-5 py-5 shadow-[0_2px_12px_rgb(0,0,0,0.05)] hover:bg-gray-50 active:scale-[0.98] transition-all text-left"
+                className="flex w-full items-center gap-4 rounded-2xl bg-white px-5 py-5 shadow-[0_2px_12px_rgb(0,0,0,0.05)] hover:bg-gray-50 active:scale-[0.98] transition-colors text-left"
               >
                 <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${kit.iconBg}`}>
                   <kit.icon size={22} className={kit.iconColor} />
@@ -400,7 +462,7 @@ function DashboardContent() {
                   <p className="text-[16px] font-extrabold text-foreground">{kit.title}</p>
                   <p className="text-[12px] text-subtext mt-0.5">{kit.desc}</p>
                 </div>
-              </motion.button>
+              </button>
             ))}
           </div>
         )}
@@ -411,18 +473,18 @@ function DashboardContent() {
         <div className="flex gap-1 rounded-full bg-white/65 backdrop-blur-2xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.12)] px-0.5 py-0.5 pointer-events-auto">
           <button
             onClick={() => setActiveTab("plan")}
-            className={`flex items-center gap-2 rounded-full px-6 py-3.5 text-[14px] font-semibold transition-all duration-200 ${
+            className={`flex w-[120px] items-center justify-center gap-2 rounded-full py-3.5 text-[14px] font-semibold transition-colors duration-200 ${
               activeTab === "plan"
                 ? "bg-gray-100 text-foreground"
                 : "text-subtext hover:text-foreground"
             }`}
           >
             <Smile size={17} />
-            은퇴 계획
+            은퇴계산기
           </button>
           <button
             onClick={() => setActiveTab("survive")}
-            className={`flex items-center gap-2 rounded-full px-6 py-3.5 text-[14px] font-semibold transition-all duration-200 ${
+            className={`flex w-[120px] items-center justify-center gap-2 rounded-full py-3.5 text-[14px] font-semibold transition-colors duration-200 ${
               activeTab === "survive"
                 ? "bg-gray-100 text-foreground"
                 : "text-subtext hover:text-foreground"
@@ -461,6 +523,11 @@ function DashboardContent() {
           />
         )}
       </AnimatePresence>
+
+      {/* 드롭다운 외부 클릭 닫기 */}
+      {showLogoutSheet && (
+        <div className="fixed inset-0 z-40" onClick={() => setShowLogoutSheet(false)} />
+      )}
 
       {/* 축하 애니메이션 */}
       <AnimatePresence>

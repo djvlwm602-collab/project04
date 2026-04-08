@@ -32,7 +32,7 @@ export default function ProfileSetupPage() {
   // 미인증 시 회원가입 첫 페이지로 리다이렉트
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.replace("/signup");
+      router.replace("/");
     }
   }, [status, router]);
 
