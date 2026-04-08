@@ -351,7 +351,7 @@ export default function SetupPage() {
 
       {/* 하단 키패드 영역 */}
       {q.unit !== "text" && (
-        <div className="w-full max-w-md mx-auto px-4 pb-6 flex flex-col gap-3">
+        <div className="w-full max-w-md mx-auto px-4 pb-4 flex flex-col gap-2">
 
           {/* 퀵버튼 */}
           {q.quickBtns && (
@@ -360,7 +360,7 @@ export default function SetupPage() {
                 <button
                   key={btn.label}
                   onClick={() => handleQuick(btn.value)}
-                  className="shrink-0 rounded-xl border border-[#FEE500] bg-[#FEE500]/10 px-3.5 py-2 text-[13px] font-bold text-[#3C1E1E] active:scale-95 transition-all"
+                  className="shrink-0 rounded-xl border border-[#FEE500] bg-[#FEE500]/10 px-3.5 py-1.5 text-[13px] font-bold text-[#3C1E1E] active:scale-95 transition-all"
                 >
                   {btn.label}
                 </button>
@@ -369,12 +369,12 @@ export default function SetupPage() {
           )}
 
           {/* 커스텀 키패드 */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-1.5">
             {["1","2","3","4","5","6","7","8","9"].map((d) => (
               <button
                 key={d}
                 onClick={() => handleDigit(d)}
-                className="flex items-center justify-center rounded-2xl bg-gray-100 py-4 text-[22px] font-bold text-foreground active:bg-gray-200 active:scale-95 transition-all"
+                className="flex items-center justify-center rounded-xl bg-gray-100 py-3 text-[20px] font-bold text-foreground active:bg-gray-200 active:scale-95 transition-all"
               >
                 {d}
               </button>
@@ -382,23 +382,23 @@ export default function SetupPage() {
             {/* C */}
             <button
               onClick={handleClear}
-              className="flex items-center justify-center rounded-2xl bg-red-100 py-4 text-[22px] font-bold text-red-500 active:bg-red-200 active:scale-95 transition-all"
+              className="flex items-center justify-center rounded-xl bg-red-100 py-3 text-[20px] font-bold text-red-500 active:bg-red-200 active:scale-95 transition-all"
             >
               C
             </button>
             {/* 0 */}
             <button
               onClick={() => handleDigit("0")}
-              className="flex items-center justify-center rounded-2xl bg-gray-100 py-4 text-[22px] font-bold text-foreground active:bg-gray-200 active:scale-95 transition-all"
+              className="flex items-center justify-center rounded-xl bg-gray-100 py-3 text-[20px] font-bold text-foreground active:bg-gray-200 active:scale-95 transition-all"
             >
               0
             </button>
             {/* 백스페이스 */}
             <button
               onClick={handleBackspace}
-              className="flex items-center justify-center rounded-2xl bg-gray-100 py-4 active:bg-gray-200 active:scale-95 transition-all"
+              className="flex items-center justify-center rounded-xl bg-gray-100 py-3 active:bg-gray-200 active:scale-95 transition-all"
             >
-              <Delete size={22} className="text-foreground" />
+              <Delete size={20} className="text-foreground" />
             </button>
           </div>
 
