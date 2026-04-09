@@ -94,19 +94,19 @@ export function GradeCard({ grade, profile, nickname, retirementDate, onClose }:
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="fixed inset-0 z-50 overflow-y-auto"
       >
-        <div className="flex min-h-full items-center justify-center px-5 py-8">
-          <div className="flex w-full max-w-sm flex-col items-center gap-4">
+        <div className="flex min-h-full items-center justify-center px-5 py-4">
+          <div className="flex w-full max-w-sm flex-col items-center gap-3">
             <button onClick={onClose} className="self-end text-white/60 hover:text-white transition-colors">
               <X size={24} />
             </button>
 
             {/*
-              모바일: aspect-[4/6] (가로4:세로6) 비율로 고정 → 6:4 portrait 카드
-              PC(sm+): aspect-[4/5] 유지
+              모바일/PC 공통: aspect-[4/5] 비율 고정
+              max-h-[65svh]: 뷰포트 높이 초과 방지 → 카드+버튼이 한 화면에 들어오도록
             */}
             <div
               ref={cardRef}
-              className={`relative w-full overflow-hidden rounded-3xl bg-gradient-to-br ${GRADE_BG[grade]} p-6 shadow-2xl aspect-[4/6] sm:aspect-[4/5]`}
+              className={`relative w-full overflow-hidden rounded-3xl bg-gradient-to-br ${GRADE_BG[grade]} p-6 shadow-2xl aspect-[4/5] max-h-[65svh]`}
             >
               <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10" />
               <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/10" />
