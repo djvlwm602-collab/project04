@@ -104,17 +104,20 @@ export function GradeCard({ grade, profile, nickname, retirementDate, onClose }:
               모바일/PC 공통: aspect-[4/5] 비율 고정
               max-h-[65svh]: 뷰포트 높이 초과 방지 → 카드+버튼이 한 화면에 들어오도록
             */}
+            {/*
+              p-6을 카드가 아닌 내부 absolute div로 이동:
+              모바일 Safari에서 aspect-ratio 부모의 h-full 버그 우회 →
+              absolute inset-0은 부모 실제 크기를 정확히 참조함
+            */}
             <div
               ref={cardRef}
-              className={`relative w-full overflow-hidden rounded-3xl bg-gradient-to-br ${GRADE_BG[grade]} p-6 shadow-2xl aspect-[4/5] max-h-[65svh]`}
+              className={`relative w-full overflow-hidden rounded-3xl bg-gradient-to-br ${GRADE_BG[grade]} shadow-2xl aspect-[4/5] max-h-[65svh]`}
             >
               <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10" />
               <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/10" />
 
-              {/*
-                모바일/PC 모두: h-full + justify-between으로 상중하 균등 배치
-              */}
-              <div className="relative z-10 flex flex-col h-full gap-0 justify-between text-white">
+              {/* absolute inset-0으로 부모 크기 정확히 참조 → justify-between 정상 동작 */}
+              <div className="absolute inset-0 p-6 z-10 flex flex-col justify-between text-white">
                 {/* 상단: 제목 + 닉네임 */}
                 <div>
                   <p className="text-[12px] font-bold uppercase tracking-widest opacity-70">은퇴 진단서</p>
