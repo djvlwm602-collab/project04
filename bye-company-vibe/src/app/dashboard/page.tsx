@@ -395,7 +395,7 @@ function DashboardContent() {
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col items-center p-5 sm:p-8 gap-4 pb-28">
+      <main className="flex flex-1 flex-col items-center pt-[10px] px-5 pb-28 sm:pt-6 sm:px-8 gap-4">
         {/* ── 은퇴 계획 탭 ──────────────────────────────────── */}
         {activeTab === "plan" && <div className="w-full max-w-md space-y-4">
 

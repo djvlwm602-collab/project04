@@ -71,7 +71,7 @@ export default function ResignationPage() {
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col items-center p-5">
+      <main className="flex flex-1 flex-col items-center pt-[10px] px-5 pb-5 sm:pt-6 sm:px-8">
         <div className="w-full max-w-md flex flex-col gap-4">
           <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm flex flex-col gap-4">
             <div className="text-center border-b border-gray-100 pb-4">

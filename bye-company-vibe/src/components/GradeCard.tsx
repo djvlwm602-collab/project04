@@ -126,11 +126,14 @@ export function GradeCard({ grade, profile, nickname, retirementDate, onClose }:
 
                 {/* 중간: 등급 + 라벨 + 설명 */}
                 <div className="flex flex-col gap-2">
-                  <div className="text-[64px] font-black leading-none tracking-tight drop-shadow-lg">
-                    {grade}
+                  <div className="flex items-end gap-1.5 leading-none">
+                    <span className="text-[64px] font-black tracking-tight drop-shadow-lg leading-none">
+                      {grade}
+                    </span>
+                    <span className="text-[14px] font-bold opacity-70 mb-2">등급</span>
                   </div>
-                  <p className="text-[15px] font-extrabold">{meta.label}</p>
-                  <p className="text-[13px] font-medium leading-relaxed opacity-80">
+                  <p className="text-[18px] font-extrabold">{meta.label}</p>
+                  <p className="text-[15px] font-medium leading-relaxed opacity-80">
                     {meta.caption}
                   </p>
                 </div>

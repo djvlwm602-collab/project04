@@ -66,7 +66,7 @@ export default function DeathNotePage() {
         <h1 className="text-lg font-extrabold text-foreground">📓 데스노트</h1>
       </header>
 
-      <main className="flex flex-1 flex-col items-center p-5">
+      <main className="flex flex-1 flex-col items-center pt-[10px] px-5 pb-5 sm:pt-6 sm:px-8">
         <div className="w-full max-w-md flex flex-col gap-5">
           <div className="flex flex-col gap-3 rounded-2xl bg-white p-5 shadow-[0_2px_12px_rgb(0,0,0,0.05)]">
             <input

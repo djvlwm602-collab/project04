@@ -131,7 +131,7 @@ export default function RoutinePage() {
         <h1 className="text-lg font-extrabold">☀️ 은퇴 후 일과</h1>
       </header>
 
-      <main className="flex flex-1 flex-col items-center p-5 gap-5">
+      <main className="flex flex-1 flex-col items-center pt-[10px] px-5 pb-5 sm:pt-6 sm:px-8 gap-5">
         <div className="w-full max-w-md flex flex-col gap-5">
           {/* 원형 일과표 */}
           <div className="flex flex-col items-center gap-2 rounded-[24px] bg-white p-6 shadow-[0_2px_20px_rgb(0,0,0,0.06)]">
