@@ -101,21 +101,20 @@ export function GradeCard({ grade, profile, nickname, retirementDate, onClose }:
             </button>
 
             {/*
-              모바일: 비율 고정 없음 → 콘텐츠 높이로 결정 (짤림 방지)
-              PC(sm+): aspect-[4/5] 복원
+              모바일: aspect-[4/6] (가로4:세로6) 비율로 고정 → 6:4 portrait 카드
+              PC(sm+): aspect-[4/5] 유지
             */}
             <div
               ref={cardRef}
-              className={`relative w-full overflow-hidden rounded-3xl bg-gradient-to-br ${GRADE_BG[grade]} p-6 shadow-2xl sm:aspect-[4/5]`}
+              className={`relative w-full overflow-hidden rounded-3xl bg-gradient-to-br ${GRADE_BG[grade]} p-6 shadow-2xl aspect-[4/6] sm:aspect-[4/5]`}
             >
               <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10" />
               <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/10" />
 
               {/*
-                모바일: gap-6 자연 간격
-                PC: h-full + justify-between으로 상중하 균등 배치
+                모바일/PC 모두: h-full + justify-between으로 상중하 균등 배치
               */}
-              <div className="relative z-10 flex flex-col gap-6 text-white sm:h-full sm:gap-0 sm:justify-between">
+              <div className="relative z-10 flex flex-col h-full gap-0 justify-between text-white">
                 {/* 상단: 제목 + 닉네임 */}
                 <div>
                   <p className="text-[12px] font-bold uppercase tracking-widest opacity-70">은퇴 진단서</p>
