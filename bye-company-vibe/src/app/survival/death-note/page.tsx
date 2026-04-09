@@ -13,7 +13,7 @@ import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import type { DeathNoteEntry } from "@/lib/types";
 import { loadDeathNote, addDeathNoteEntry, deleteDeathNoteEntry } from "@/lib/storage";
 
-const NEGATIVE_EMOJIS = ["💀", "👿", "😤", "🤬", "😈", "🔪", "⚰️", "🖤", "😡", "👹"];
+const NEGATIVE_EMOJIS = ["💀", "👿", "😤", "🤬", "😈", "🔪", "⚰️", "😡", "👹"];
 
 // id 기반으로 일관된 이모지 선택 (재렌더링해도 바뀌지 않도록)
 function getEntryEmoji(id: string): string {
