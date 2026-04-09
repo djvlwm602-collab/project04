@@ -161,8 +161,9 @@ function SettingsSheet({
 
   const handleChange = (key: keyof UserProfile, val: string, isPercent?: boolean, isText?: boolean, isManwon?: boolean) => {
     if (isText) { setDraft((p) => ({ ...p, [key]: val })); return; }
-    // 쉼표 제거 후 파싱
+    // 쉼표 제거 후 파싱 — 빈 문자열은 0으로 처리
     const stripped = val.replace(/,/g, "");
+    if (stripped === "") { setDraft((p) => ({ ...p, [key]: 0 })); return; }
     const parsed = parseFloat(stripped);
     if (isNaN(parsed)) return;
     // 만원 단위: 입력값 × 10,000으로 원 단위 저장
@@ -195,22 +196,27 @@ function SettingsSheet({
         <div className="flex items-center justify-between px-6 pt-2 pb-4 border-b border-gray-100">
           <h2 className="text-[18px] font-extrabold text-foreground">수치 재입력</h2>
         </div>
-        <div className="overflow-y-auto px-6 pb-8" style={{ maxHeight: "calc(90vh - 160px)" }}>
-          <div className="flex flex-col gap-4 pt-4">
+        <div className="overflow-y-auto px-5 pb-8" style={{ maxHeight: "calc(90vh - 160px)" }}>
+          <div className="flex flex-col gap-3 pt-4">
             {fields.map(({ key, order, label, unit, isPercent, isText, isManwon }) => (
-              <div key={key} className="flex items-center gap-3">
-                <label className="w-28 shrink-0">
-                  <span className="text-[17px] font-bold text-foreground">{label}</span>
-                </label>
-                <div className="flex flex-1 items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-5 py-4 focus-within:border-[#FEE500] transition-all">
+              <div key={key} className="flex flex-col gap-1.5">
+                {/* 라벨 행 — 배지 + 항목명 */}
+                <div className="flex items-center gap-2 px-1">
+                  <span className="text-[11px] font-extrabold text-subtext tracking-wider">{order}</span>
+                  <span className="text-[14px] font-bold text-foreground">{label}</span>
+                </div>
+                {/* 입력 행 */}
+                <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 focus-within:border-[#FEE500] transition-all">
                   <input
                     type="text"
-                    inputMode={isText ? "text" : "numeric"}
+                    // 수익률은 소수점 입력 가능 → decimal, 나머지 숫자는 numeric
+                    inputMode={isText ? "text" : isPercent ? "decimal" : "numeric"}
                     value={displayVal(key, isPercent, isText, isManwon)}
                     onChange={(e) => handleChange(key, e.target.value, isPercent, isText, isManwon)}
-                    className="flex-1 bg-transparent text-[20px] font-bold text-foreground outline-none text-right"
+                    placeholder="0"
+                    className={`flex-1 bg-transparent text-[18px] font-bold text-foreground outline-none ${isText ? "text-left" : "text-right"}`}
                   />
-                  {unit && <span className="text-[16px] font-bold text-subtext shrink-0">{unit}</span>}
+                  {unit && <span className="text-[14px] font-bold text-subtext shrink-0">{unit}</span>}
                 </div>
               </div>
             ))}

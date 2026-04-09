@@ -83,70 +83,76 @@ export function GradeCard({ grade, profile, nickname, retirementDate, onClose }:
         onClick={onClose}
         className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
       />
+      {/*
+        overflow-y-auto: 뷰포트보다 길어지면 모달 자체를 스크롤
+        min-h-full + items-center: 짧을 땐 중앙 정렬, 넘칠 땐 스크롤
+      */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 30 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 30 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-6"
+        className="fixed inset-0 z-50 overflow-y-auto"
       >
-        <div className="flex w-full max-w-sm flex-col items-center gap-4">
-          <button onClick={onClose} className="self-end text-white/60 hover:text-white transition-colors">
-            <X size={24} />
-          </button>
+        <div className="flex min-h-full items-center justify-center px-5 py-8">
+          <div className="flex w-full max-w-sm flex-col items-center gap-4">
+            <button onClick={onClose} className="self-end text-white/60 hover:text-white transition-colors">
+              <X size={24} />
+            </button>
 
-          <div
-            ref={cardRef}
-            className={`relative w-full overflow-hidden rounded-3xl bg-gradient-to-br ${GRADE_BG[grade]} p-8 shadow-2xl`}
-            style={{ aspectRatio: "4 / 5" }}
-          >
-            <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10" />
-            <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/10" />
+            <div
+              ref={cardRef}
+              className={`relative w-full overflow-hidden rounded-3xl bg-gradient-to-br ${GRADE_BG[grade]} p-6 shadow-2xl`}
+              style={{ aspectRatio: "4 / 5" }}
+            >
+              <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10" />
+              <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/10" />
 
-            <div className="relative z-10 flex h-full flex-col justify-between text-white">
-              <div>
-                <p className="text-[12px] font-bold uppercase tracking-widest opacity-70">은퇴 진단서</p>
-                <p className="mt-1 text-[13px] font-bold opacity-60">{nickname || "익명의 직장인"}</p>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <div className="text-[80px] font-black leading-none tracking-tight drop-shadow-lg">
-                  {grade}
-                </div>
-                <p className="text-[16px] font-extrabold">{meta.label}</p>
-                <p className="mt-2 text-[13px] font-medium leading-relaxed opacity-80">
-                  {meta.caption}
-                </p>
-              </div>
-
-              <div className="flex justify-between">
+              <div className="relative z-10 flex h-full flex-col justify-between text-white">
                 <div>
-                  <p className="text-[11px] opacity-60">D-Day</p>
-                  <p className="text-[18px] font-extrabold">D-{dDay.toLocaleString()}</p>
+                  <p className="text-[12px] font-bold uppercase tracking-widest opacity-70">은퇴 진단서</p>
+                  <p className="mt-1 text-[13px] font-bold opacity-60">{nickname || "익명의 직장인"}</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-[11px] opacity-60">은퇴 후 {survivalYears}년 생존</p>
-                  <p className="text-[13px] font-bold opacity-80">{retirementDate} 예정</p>
+
+                <div className="flex flex-col gap-2">
+                  <div className="text-[72px] font-black leading-none tracking-tight drop-shadow-lg">
+                    {grade}
+                  </div>
+                  <p className="text-[15px] font-extrabold">{meta.label}</p>
+                  <p className="mt-1 text-[13px] font-medium leading-relaxed opacity-80">
+                    {meta.caption}
+                  </p>
+                </div>
+
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-[11px] opacity-60">D-Day</p>
+                    <p className="text-[18px] font-extrabold">D-{dDay.toLocaleString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[11px] opacity-60">은퇴 후 {survivalYears}년 생존</p>
+                    <p className="text-[13px] font-bold opacity-80">{retirementDate} 예정</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex w-full gap-3">
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-[15px] font-bold text-gray-800 shadow-lg hover:scale-[1.02] active:scale-95 disabled:opacity-50 transition-all"
-            >
-              <Download size={18} /> 저장
-            </button>
-            <button
-              onClick={handleShare}
-              disabled={saving}
-              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-[15px] font-bold text-gray-800 shadow-lg hover:scale-[1.02] active:scale-95 disabled:opacity-50 transition-all"
-            >
-              <Share2 size={18} /> 공유
-            </button>
+            <div className="flex w-full gap-3">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-[15px] font-bold text-gray-800 shadow-lg hover:scale-[1.02] active:scale-95 disabled:opacity-50 transition-all"
+              >
+                <Download size={18} /> 저장
+              </button>
+              <button
+                onClick={handleShare}
+                disabled={saving}
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-[15px] font-bold text-gray-800 shadow-lg hover:scale-[1.02] active:scale-95 disabled:opacity-50 transition-all"
+              >
+                <Share2 size={18} /> 공유
+              </button>
+            </div>
           </div>
         </div>
       </motion.div>
