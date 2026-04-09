@@ -108,14 +108,15 @@ export function GradeCard({ grade, profile, nickname, retirementDate, onClose }:
               <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10" />
               <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/10" />
 
-              <div className="relative z-10 flex h-full flex-col justify-between text-white">
+              {/* justify-between 대신 mt-auto로 하단 고정 — overflow-hidden에 잘리는 현상 방지 */}
+              <div className="relative z-10 flex h-full flex-col text-white">
                 <div>
                   <p className="text-[12px] font-bold uppercase tracking-widest opacity-70">은퇴 진단서</p>
                   <p className="mt-1 text-[13px] font-bold opacity-60">{nickname || "익명의 직장인"}</p>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <div className="text-[72px] font-black leading-none tracking-tight drop-shadow-lg">
+                <div className="mt-6 flex flex-col gap-2">
+                  <div className="text-[64px] font-black leading-none tracking-tight drop-shadow-lg">
                     {grade}
                   </div>
                   <p className="text-[15px] font-extrabold">{meta.label}</p>
@@ -124,7 +125,8 @@ export function GradeCard({ grade, profile, nickname, retirementDate, onClose }:
                   </p>
                 </div>
 
-                <div className="flex justify-between">
+                {/* mt-auto: 남은 공간 차지 후 하단에 고정 */}
+                <div className="mt-auto flex justify-between pt-4">
                   <div>
                     <p className="text-[11px] opacity-60">D-Day</p>
                     <p className="text-[18px] font-extrabold">D-{dDay.toLocaleString()}</p>
