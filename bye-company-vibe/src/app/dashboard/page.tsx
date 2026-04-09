@@ -454,7 +454,7 @@ function DashboardContent() {
 
         {/* ── 버티기 탭 ─────────────────────────────────────── */}
         {activeTab === "survive" && (
-          <div className="w-full max-w-md flex flex-col gap-3 mt-2">
+          <div className="w-full max-w-md flex flex-col gap-3">
             {KITS.map((kit) => (
               <button
                 key={kit.href}
